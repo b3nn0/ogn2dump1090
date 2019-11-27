@@ -102,3 +102,10 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+
+dump1090/
+mlat-client/
+rtlsdr-ogn
+rtlsdr-ogn-0.2.6/
+

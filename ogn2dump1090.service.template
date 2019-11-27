@@ -1,0 +1,25 @@
+# ogn2dump1090 service for systemd.
+# To set it up, run
+# OGN2DUMP1090DIR=$(pwd) envsubst < ogn2dump1090.service.template > ogn2dump1090.service
+# sudo mv ogn2dump1090.service /etc/systemd/system/
+
+
+[Unit]
+Description=Ogn2Dump1090
+Documentation=https://github.com/b3nn0/ogn2dump1090
+Wants=network.target
+After=network.target
+
+[Service]
+User=pi
+RuntimeDirectory=${OGN2DUMP1090DIR}
+RuntimeDirectoryMode=0755
+ExecStart=/usr/bin/python3 ${OGN2DUMP1090DIR}/ogn2dump1090.py
+Type=simple
+Restart=on-failure
+RestartSec=30
+RestartPreventExitStatus=64
+Nice=-5
+
+[Install]
+WantedBy=default.target
