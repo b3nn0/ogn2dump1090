@@ -14,15 +14,21 @@ class Dump1090Writer:
         self.sock = None
     
     def connect(self):
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect(('127.0.0.1', 30004))
-        self.conn = mlat.client.output.BeastConnection(None, self.sock, socket.AF_INET, socket.SOCK_STREAM, ('127.0.0.1', 30004))
+        try:
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.sock.connect(('127.0.0.1', 30004))
+            self.conn = mlat.client.output.BeastConnection(None, self.sock, socket.AF_INET, socket.SOCK_STREAM, ('127.0.0.1', 30004))
+        except:
+            print('Cannot connect to dump1090 (yet?)')
         
         #self.conn.connect_now()
         #self.conn.connected = True
 
     
     def send_msg(self, msg):
+        if self.conn is None or not self.conn.connected:
+            self.connect()
+            
         # Format as beast message
         speed = float(msg['ground_speed']) * 1.94384 # m/s in kt
         track = math.radians(float(msg['track']))

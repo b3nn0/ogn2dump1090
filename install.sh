@@ -1,14 +1,14 @@
 #!/bin/bash
-echo TODO
-exit 0
+
 echo "Simple installer script to work on a CLEAN raspbian buster image."
 echo "Tested on RaspberryPi 3b+"
 echo "if you e.g. already have dump1090-fa or dump1090-mutability running, you can skip these steps"
 read -p "Press return to continue"
 sudo apt update
 
+echo
 read -p "Install base dependencies? [y/n]" -n 1 -r
-if [[ $REPLAY =~ ^[Yy]$ ]]; then
+if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo "installing base dependencies"
     sudo apt install --yes python3-pip rtl-sdr
     sudo pip3 install ogn-client
@@ -18,8 +18,9 @@ if [[ $REPLAY =~ ^[Yy]$ ]]; then
     cd ..
 fi
 
+echo
 read -p "Install and setup dump1090-fa? [y/n]" -n 1 -r
-if [[ $REPLAY =~ ^[Yy]$ ]]; then
+if [[ $REPLY =~ ^[Yy]$ ]]; then
     sudo apt install --yes libncurses-dev librtlsdr-dev libbladerf-dev lighttpd debhelper dh-systemd
     git clone https://github.com/flightaware/dump1090.git
     cd dump1090
@@ -35,8 +36,9 @@ if [[ $REPLAY =~ ^[Yy]$ ]]; then
     sudo nano /etc/default/dump1090-fa
 fi
 
+echo
 read -p "Install OGN Client? [y/n]" -n 1 -r
-if [[ $REPLAY =~ ^[Yy]$ ]]; then
+if [[ $REPLY =~ ^[Yy]$ ]]; then
     sudo bash -c "cat >> /etc/modprobe.d/rtl-glidernet-blacklist.conf <<EOF
 blacklist rtl2832
 blacklist r820t
@@ -72,18 +74,20 @@ EOF"
     nano ogn_setup.conf  
 fi
 
+echo
 read -p "Install service file/start ogn2dump1090 on boot [y/n]" -n 1 -r
-if [[ $REPLAY =~ ^[Yy]$ ]]; then
+if [[ $REPLY =~ ^[Yy]$ ]]; then
     OGN2DUMP1090DIR=$(pwd) envsubst < ogn2dump1090.service.template > ogn2dump1090.service
     sudo mv ogn2dump1090.service /etc/systemd/system/
     sudo systemctl enable ogn2dump1090
     sudo systemctl start ogn2dump1090
 fi
 
+echo
 read -p "The RaspberryPi now needs to be rebooted to make sure all permissions are set correctly. Afterwards 
 you should be able to access the dump1090-fa interface on
 http://raspberrypi/dump1090-fa.
 Reboot now? [y/n]"
-if [[ $REPLAY =~ ^[Yy]$ ]]; then
+if [[ $REPLY =~ ^[Yy]$ ]]; then
     sudo reboot
 fi
