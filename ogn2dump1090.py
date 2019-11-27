@@ -8,9 +8,12 @@ import asyncore
 import os
 
 if __name__ == '__main__':
-    dir = os.path.abspath(os.path.dirname(__file__))
-    os.chdir(dir)
-    print('Switched to ' + dir)
+    #import ptvsd; ptvsd.enable_attach(address=('0.0.0.0', 3000)); ptvsd.wait_for_attach()
+    
+    d = os.path.abspath(os.path.dirname(__file__))
+    os.chdir(d)
+    print('Switched to ' + d)
+    print('Starting up')
     
     # Start dummy APRS server
     aprs_server = aprsserver.AprsServer()
