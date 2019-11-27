@@ -8,7 +8,7 @@ import asyncore
 import os
 
 if __name__ == '__main__':
-    import ptvsd; ptvsd.enable_attach(address=('0.0.0.0', 3000)); ptvsd.wait_for_attach()
+    #import ptvsd; ptvsd.enable_attach(address=('0.0.0.0', 3000)); ptvsd.wait_for_attach()
     
     d = os.path.abspath(os.path.dirname(__file__))
     os.chdir(d)
