@@ -80,7 +80,10 @@ if [[ $REPLAY =~ ^[Yy]$ ]]; then
     sudo systemctl start ogn2dump1090
 fi
 
-read -p "The RaspberryPi now needs to be rebooted to make sure all permissions are set correctly. Reboot now? [y/n]"
+read -p "The RaspberryPi now needs to be rebooted to make sure all permissions are set correctly. Afterwards 
+you should be able to access the dump1090-fa interface on
+http://raspberrypi/dump1090-fa.
+Reboot now? [y/n]"
 if [[ $REPLAY =~ ^[Yy]$ ]]; then
     sudo reboot
 fi
