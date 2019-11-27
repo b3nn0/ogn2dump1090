@@ -5,8 +5,11 @@ import aprsserver
 import ognreader
 import dump1090writer
 import asyncore
+import os
 
 if __name__ == '__main__':
+    os.chdir(os.path.abspath(os.path.dirname(__file__)))
+    
     # Start dummy APRS server
     aprs_server = aprsserver.AprsServer()
     aprs_server.start()
