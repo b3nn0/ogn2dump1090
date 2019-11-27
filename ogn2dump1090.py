@@ -8,7 +8,9 @@ import asyncore
 import os
 
 if __name__ == '__main__':
-    os.chdir(os.path.abspath(os.path.dirname(__file__)))
+    dir = os.path.abspath(os.path.dirname(__file__))
+    os.chdir(dir)
+    print('Switched to ' + dir)
     
     # Start dummy APRS server
     aprs_server = aprsserver.AprsServer()
