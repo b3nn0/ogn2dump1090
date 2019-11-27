@@ -3,6 +3,7 @@ import config
 import subprocess
 import re
 import os
+import json
 import ogn.parser.telnet_parser
 from ogn.parser.pattern import PATTERN_TELNET_50001
 
@@ -12,12 +13,24 @@ class OgnReader(threading.Thread):
         self.proc_rf = None
         self.proc_decode = None
         self.callback = callback
+        self.ogn_devicedb = {}
+        self.read_ognddb()
     
     def __del__(self):
         if self.proc_rf is not None:
             self.proc_rf.kill()
         if self.proc_decode is not None:
             self.proc_decode.kill()
+    
+    def read_ognddb(self):
+        try:
+            ddb = json.loads(open('ddb.json', 'r').read())
+            for dev in ddb['devices']:
+                devid = dev['device_id']
+                call = dev['registration']
+                self.ogn_devicedb[devid] = call
+        except:
+            print('Failed to read device db')
     
     def run(self):
         print('OgnReader startup')
@@ -41,7 +54,12 @@ class OgnReader(threading.Thread):
         try:
             search = re.search(PATTERN_TELNET_50001, str(line))
             if search is not None:
-                self.callback(search.groupdict())
+                res = search.groupdict()
+                if res['address'] in self.ogn_devicedb:
+                    res['registration'] = self.ogn_devicedb[res['address']]
+                else:
+                    res['registration'] = None
+                self.callback(res)
         except:
             pass
         

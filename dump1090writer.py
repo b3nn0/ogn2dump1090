@@ -18,6 +18,7 @@ class Dump1090Writer:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.sock.connect(('127.0.0.1', 30004))
             self.conn = mlat.client.output.BeastConnection(None, self.sock, socket.AF_INET, socket.SOCK_STREAM, ('127.0.0.1', 30004))
+            #self.conn = mlat.client.output.BasestationConnection(None, self.sock, socket.AF_INET, socket.SOCK_STREAM, ('127.0.0.1', 30004))
         except:
             print('Cannot connect to dump1090 (yet?)')
         
@@ -28,7 +29,7 @@ class Dump1090Writer:
     def send_msg(self, msg):
         if self.conn is None or not self.conn.connected:
             self.connect()
-            
+
         # Format as beast message
         speed = float(msg['ground_speed']) * 1.94384 # m/s in kt
         track = math.radians(float(msg['track']))
@@ -36,7 +37,7 @@ class Dump1090Writer:
         ew = speed * math.sin(track)
         #print('send_position')
         self.conn.send_position(None, int(msg['address'], 16), float(msg['latitude']), float(msg['longitude']), float(msg['altitude']) * 3.28084,
-            ns, ew, int(float(msg['climb_rate']) * 196.85), None, None, None, None, False, False)
+            ns, ew, int(float(msg['climb_rate']) * 196.85), msg['registration'], None, None, None, False, False)
         asyncore.loop(count=1)
 
 if __name__ == '__main__':
@@ -73,5 +74,6 @@ if __name__ == '__main__':
             'bearing': '000.0',
             'phi': '+80.4',
             'multichannel': None,
-            'baro_altitude': None})
+            'baro_altitude': None,
+            'registration': 'D-EABC'})
         time.sleep(0.1)

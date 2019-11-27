@@ -83,6 +83,14 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     sudo systemctl start ogn2dump1090
 fi
 
+# TODO: can't transmit callsign via BEAST format...
+#echo
+#read -p "Install OGN Device DB for callsign lookup? [y/n]" -n 1 -r
+#if [[ $REPLY =~ ^[Yy]$ ]]; then
+#    wget -O ddb.json http://ddb.glidernet.org/download/?j=1
+#fi
+
+
 echo
 read -p "The RaspberryPi now needs to be rebooted to make sure all permissions are set correctly. Afterwards 
 you should be able to access the dump1090-fa interface on
