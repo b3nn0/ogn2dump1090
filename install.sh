@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+#set -x
 echo "Simple installer script to work on a CLEAN raspbian buster image."
 echo "Tested on RaspberryPi 3b+"
 echo "if you e.g. already have dump1090-fa or dump1090-mutability running, you can skip these steps"
