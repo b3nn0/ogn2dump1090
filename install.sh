@@ -80,6 +80,10 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     sudo chmod a+s gsm_scan
     sudo chown root ogn-rf
     sudo chmod a+s  ogn-rf
+
+    # download for automatic geoid sep
+    wget --no-check-certificate https://earth-info.nga.mil/GandG/wgs84/gravitymod/egm96/binary/WW15MGH.DAC
+
     cd ..
 
     echo "I will now open the OGN configuration file in nano. Please make proper adjustments."
