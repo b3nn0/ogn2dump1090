@@ -37,6 +37,12 @@ and press `y` a couple of times
 After a reboot, you should be able to open http://raspberrypi/dump1090-fa/
 and see both, dump1090 AND flarm aircraft on the web interface.
 
+For further configuration adjustments, please edit:
+
+`/home/pi/ogn2dump1090/ogn_setup.conf` (dump1090-fa configuration)
+
+`/etc/default/dump1090-fa` (ogn configuration)
+
 ## Mlat support
 TODO
 you can run mlat-client to connect to your favourite mlat server. The results will be seen on the web interface.
