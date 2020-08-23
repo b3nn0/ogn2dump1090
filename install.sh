@@ -1,7 +1,7 @@
 #!/bin/bash
 #set -x
 echo "Simple installer script to work on a CLEAN raspbian buster image."
-echo "Tested on RaspberryPi 3b+"
+echo "Tested on RaspberryPi 3b, 3b+ and 4b"
 echo "if you e.g. already have dump1090-fa or dump1090-mutability running, you can skip these steps"
 read -p "Press return to continue"
 sudo apt update
@@ -28,8 +28,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     sudo apt install --yes libncurses-dev librtlsdr-dev libbladerf-dev lighttpd debhelper dh-systemd
     git clone https://github.com/flightaware/dump1090.git
     cd dump1090
-    ./prepare-build.sh stretch
-    cd package-stretch
+    ./prepare-build.sh buster
+    cd package-buster
     dpkg-buildpackage -uc -us
     cd ..
     sudo dpkg -i dump1090-fa_*.deb
@@ -52,18 +52,30 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo blacklist dvb_usb_rtl28xxu | sudo tee -a /etc/modprobe.d/rtl-glidernet-blacklist.conf
     
     sudo apt install --yes libconfig9 libjpeg8 lynx ntpdate ntp
-    # Need to use older libfftw for now because the one in raspbian stretch makes OGN hang on startup...
+    # Need to use older libfftw for now because the one in raspbian buster makes OGN hang on startup...
     wget http://ftp.debian.org/debian/pool/main/f/fftw3/libfftw3-bin_3.3.5-3_armhf.deb
     wget http://ftp.debian.org/debian/pool/main/f/fftw3/libfftw3-dev_3.3.5-3_armhf.deb
     wget http://ftp.debian.org/debian/pool/main/f/fftw3/libfftw3-double3_3.3.5-3_armhf.deb
     wget http://ftp.debian.org/debian/pool/main/f/fftw3/libfftw3-single3_3.3.5-3_armhf.deb
     sudo dpkg -i libfftw*.deb
     rm libfftw*.deb
+    sudo apt-mark hold libfftw3-bin libfftw3-dev libfftw3-double3 libfftw3-single3
 
-    wget http://download.glidernet.org/rpi-gpu/rtlsdr-ogn-bin-RPI-GPU-latest.tgz
-    tar xzf rtlsdr-ogn-bin-RPI-GPU-latest.tgz
-    rm rtlsdr-ogn-bin-RPI-GPU-latest.tgz
+    # OGN v0.2.6: GPU version for Pi3
+    #wget http://download.glidernet.org/rpi-gpu/rtlsdr-ogn-bin-RPI-GPU-latest.tgz
+    #tar xzf rtlsdr-ogn-bin-RPI-GPU-latest.tgz
+    
+    # OGN v0.2.6: only ARM version works with Pi4
+    wget http://download.glidernet.org/arm/rtlsdr-ogn-bin-ARM-latest.tgz
+    tar xvzf rtlsdr-ogn-bin-ARM-latest.tgz
+
+    rm *.tgz
+
     cd rtlsdr-ogn
+
+    # OGN v0.2.6: explicit fifo file required
+    mkfifo ogn-rf.fifo
+
     sudo chown root gsm_scan
     sudo chmod a+s gsm_scan
     sudo chown root ogn-rf
