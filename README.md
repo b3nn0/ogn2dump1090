@@ -29,7 +29,7 @@ To use it, follow these steps:
 ```
 sudo apt update
 sudo apt install --yes git
-git clone https://github.com/b3nn0/ogn2dump1090.git
+git clone https://github.com/VirusPilot/ogn2dump1090.git
 cd ogn2dump1090
 ./install.sh
 ```
