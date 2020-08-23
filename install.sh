@@ -82,7 +82,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     sudo chmod a+s  ogn-rf
 
     # download for automatic geoid sep
-    wget --no-check-certificate https://earth-info.nga.mil/GandG/wgs84/gravitymod/egm96/binary/WW15MGH.DAC
+    sudo wget --no-check-certificate https://earth-info.nga.mil/GandG/wgs84/gravitymod/egm96/binary/WW15MGH.DAC
 
     cd ..
 
