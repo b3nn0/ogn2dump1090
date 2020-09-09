@@ -39,9 +39,9 @@ and see both, dump1090 AND flarm aircraft on the web interface.
 
 For further configuration adjustments, please edit:
 
-`/home/pi/ogn2dump1090/ogn_setup.conf` (dump1090-fa configuration)
+`/home/pi/ogn2dump1090/ogn_setup.conf` (ogn configuration)
 
-`/etc/default/dump1090-fa` (ogn configuration)
+`/etc/default/dump1090-fa` (dump1090-fa configuration)
 
 ## Mlat support
 TODO
