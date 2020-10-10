@@ -62,12 +62,12 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     sudo apt-mark hold libfftw3-bin libfftw3-dev libfftw3-double3 libfftw3-single3
 
     # OGN v0.2.6: GPU version for Pi3
-    #wget http://download.glidernet.org/rpi-gpu/rtlsdr-ogn-bin-RPI-GPU-latest.tgz
-    #tar xzf rtlsdr-ogn-bin-RPI-GPU-latest.tgz
+    #wget http://download.glidernet.org/rpi-gpu/rtlsdr-ogn-bin-RPI-GPU-0.2.6.tgz
+    #tar xzf rtlsdr-ogn-bin-RPI-GPU-0.2.6.tgz
     
     # OGN v0.2.6: only ARM version works with Pi4
-    wget http://download.glidernet.org/arm/rtlsdr-ogn-bin-ARM-latest.tgz
-    tar xvzf rtlsdr-ogn-bin-ARM-latest.tgz
+    wget http://download.glidernet.org/arm/rtlsdr-ogn-bin-ARM-0.2.6.tgz
+    tar xvzf rtlsdr-ogn-bin-ARM-0.2.6.tgz
 
     rm *.tgz
 
