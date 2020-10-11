@@ -25,11 +25,10 @@ read -p "Install and setup dump1090-fa? [y/n]" -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     sudo apt install --yes libncurses-dev librtlsdr-dev libbladerf-dev lighttpd debhelper dh-systemd libhackrf-dev liblimesuite-dev
+    mkdir dump1090 && cd dump1090
     git clone https://github.com/flightaware/dump1090.git
     cd dump1090
-    ./prepare-build.sh buster
-    cd package-buster
-    dpkg-buildpackage -uc -us
+    dpkg-buildpackage -b --no-sign
     cd ..
     sudo dpkg -i dump1090-fa_*.deb
     cd ..
@@ -52,16 +51,20 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     
     sudo apt install --yes libconfig9 libjpeg8 lynx ntpdate ntp
 
-    wget http://download.glidernet.org/rpi-gpu/rtlsdr-ogn-bin-RPI-GPU-latest.tgz
-    tar xzf rtlsdr-ogn-bin-RPI-GPU-latest.tgz
-    rm rtlsdr-ogn-bin-RPI-GPU-latest.tgz
+    if grep -q "Pi 4" /proc/device-tree/model; then
+        wget http://download.glidernet.org/arm/rtlsdr-ogn-bin-ARM-latest.tgz
+    else
+        wget http://download.glidernet.org/rpi-gpu/rtlsdr-ogn-bin-RPI-GPU-latest.tgz
+    fi
+    tar xzf rtlsdr-ogn-bin-*.tgz
+    rm rtlsdr-ogn-bin-*.tgz
     cd rtlsdr-ogn
     . setup-rpi.sh
     cd ..
 
     echo "I will now open the OGN configuration file in nano. Please make proper adjustments."
     echo "Most importantly, check latitude, longitude and altitude."
-    echo "You might also want to change the Device = 1 to something else to not conflict with dump1090."
+    echo "You might also want to change the Device = 0 to something else to not conflict with dump1090."
     echo "If you want to feed to OpenGliderNet aswell, you can change the APRS section "
     echo "and give your receiver a Call and remove the Server=localhost.. line"
     echo "Then save the file (Crtl+O, Return) and quit nano (Ctrl+X)."
