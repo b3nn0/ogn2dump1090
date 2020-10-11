@@ -1,7 +1,7 @@
 #!/bin/bash
 #set -x
 echo "Simple installer script to work on a CLEAN raspbian buster image."
-echo "Tested on RaspberryPi 3b+"
+echo "Tested on RaspberryPi 3b, 3b+ and 4b"
 echo "if you e.g. already have dump1090-fa or dump1090-mutability running, you can skip these steps"
 read -p "Press return to continue"
 sudo apt update
@@ -61,6 +61,9 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     cd rtlsdr-ogn
     . setup-rpi.sh
     cd ..
+
+   # download for automatic geoid sep
+    sudo wget --no-check-certificate https://earth-info.nga.mil/GandG/wgs84/gravitymod/egm96/binary/WW15MGH.DAC
 
     echo "I will now open the OGN configuration file in nano. Please make proper adjustments."
     echo "Most importantly, check latitude, longitude and altitude."
