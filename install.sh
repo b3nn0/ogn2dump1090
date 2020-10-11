@@ -13,7 +13,6 @@ echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo "installing base dependencies"
     sudo apt install --yes python3-pip rtl-sdr
-    sudo pip3 install ogn-client
     git clone https://github.com/mutability/mlat-client.git
     cd mlat-client
     sudo python3 setup.py install
@@ -25,11 +24,11 @@ read -t 1 -n 10000 discard
 read -p "Install and setup dump1090-fa? [y/n]" -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-    sudo apt install --yes libncurses-dev librtlsdr-dev libbladerf-dev lighttpd debhelper dh-systemd
+    sudo apt install --yes libncurses-dev librtlsdr-dev libbladerf-dev lighttpd debhelper dh-systemd libhackrf-dev liblimesuite-dev
     git clone https://github.com/flightaware/dump1090.git
     cd dump1090
-    ./prepare-build.sh stretch
-    cd package-stretch
+    ./prepare-build.sh buster
+    cd package-buster
     dpkg-buildpackage -uc -us
     cd ..
     sudo dpkg -i dump1090-fa_*.deb
@@ -52,22 +51,12 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo blacklist dvb_usb_rtl28xxu | sudo tee -a /etc/modprobe.d/rtl-glidernet-blacklist.conf
     
     sudo apt install --yes libconfig9 libjpeg8 lynx ntpdate ntp
-    # Need to use older libfftw for now because the one in raspbian stretch makes OGN hang on startup...
-    wget http://ftp.debian.org/debian/pool/main/f/fftw3/libfftw3-bin_3.3.5-3_armhf.deb
-    wget http://ftp.debian.org/debian/pool/main/f/fftw3/libfftw3-dev_3.3.5-3_armhf.deb
-    wget http://ftp.debian.org/debian/pool/main/f/fftw3/libfftw3-double3_3.3.5-3_armhf.deb
-    wget http://ftp.debian.org/debian/pool/main/f/fftw3/libfftw3-single3_3.3.5-3_armhf.deb
-    sudo dpkg -i libfftw*.deb
-    rm libfftw*.deb
 
     wget http://download.glidernet.org/rpi-gpu/rtlsdr-ogn-bin-RPI-GPU-latest.tgz
     tar xzf rtlsdr-ogn-bin-RPI-GPU-latest.tgz
     rm rtlsdr-ogn-bin-RPI-GPU-latest.tgz
     cd rtlsdr-ogn
-    sudo chown root gsm_scan
-    sudo chmod a+s gsm_scan
-    sudo chown root ogn-rf
-    sudo chmod a+s  ogn-rf
+    . setup-rpi.sh
     cd ..
 
     echo "I will now open the OGN configuration file in nano. Please make proper adjustments."
