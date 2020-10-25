@@ -32,8 +32,12 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     cd ..
     sudo dpkg -i dump1090-fa_*.deb
     cd ..
-    echo "I will now open the dump1090-fa configuration for you in nano. Please modify as needed (especially the --device-index"
-    echo "parameter to resolve the potential conflict with OGN)."
+    echo "I will now open the dump1090-fa configuration for you in nano."
+    echo "Please modify as needed, e.g. RECEIVER_OPTIONS:"
+    echo "--device-index 0 (to resolve a potential conflict with the SDR used by OGN)"
+    echo "--gain -10"
+    echo "--ppm 0"
+    echo "--lat 48.0000 --lon 10.0000 (receiver location required to show distance from receiver)"
     echo "Then save the file (Crtl+O, Return) and quit nano (Ctrl+X)."
     read -p "Press return to continue"
     sudo nano /etc/default/dump1090-fa

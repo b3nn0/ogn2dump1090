@@ -41,7 +41,7 @@ For further configuration modifications, please edit:
 
 `/home/pi/ogn2dump1090/ogn_setup.conf` (ogn configuration)
 
-`/etc/default/dump1090-fa` (dump1090-fa configuration)
+`/etc/default/dump1090-fa` (dump1090-fa configuration, e.g. --device-index --gain --ppm --lat --lon)
 
 ## Mlat support
 TODO
