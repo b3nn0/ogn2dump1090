@@ -10,7 +10,7 @@ import json
 # and adapted for OGN 2.8 stack (and reduced a bit for fields we don't need)
 PATTERN_TELNET_50001 = re.compile(r"""
     (?P<pps_offset>\d\.\d+)sec:(?P<frequency>\d+\.\d+)MHz:\s+
-    (?P<aircraft_type>\d):(?P<address_type>\d):(?P<address>[A-F0-9]{6})\s
+    (?P<aircraft_type>.):(?P<address_type>\d):(?P<address>[A-F0-9]{6})\s
     (?P<timestamp>\d{6}):\s
     \[\s*(?P<latitude>[+-]\d+\.\d+),\s*(?P<longitude>[+-]\d+\.\d+)\]deg\s*
     (?P<altitude>\d+)m\s*
@@ -18,7 +18,7 @@ PATTERN_TELNET_50001 = re.compile(r"""
     (?P<ground_speed>\d+\.\d+)m/s\s*
     (?P<track>\d+\.\d+)deg\s*
     (?P<turn_rate>[+-]\d+\.\d+)deg/s\s*
-    (?P<magic_number>[0-9a-z]+)\s*
+    (?P<magic_number>[0-9a-zA-Z]+)\s*
     (?P<gps_status>[0-9x]+)m\s*
     (?P<channelinfo>.+?:\S+)\s*
     (?P<frequency_offset>[+-]\d+\.\d+)kHz\s*
