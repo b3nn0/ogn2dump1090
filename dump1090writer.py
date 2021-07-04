@@ -36,8 +36,11 @@ class Dump1090Writer:
         ns = speed * math.cos(track)
         ew = speed * math.sin(track)
         #print('send_position')
+        anon = False
+        if msg['address'].lower()[0:2] == 'DD' or msg['address'].lower()[0:1] == '1':
+            anon = True
         self.conn.send_position(None, int(msg['address'], 16), float(msg['latitude']), float(msg['longitude']), float(msg['altitude']) * 3.28084,
-            ns, ew, int(float(msg['climb_rate']) * 196.85), msg['registration'], None, None, None, False, False)
+            ns, ew, int(float(msg['climb_rate']) * 196.85), msg['registration'], None, None, None, anon, False)
         asyncore.loop(count=1)
 
 if __name__ == '__main__':
