@@ -67,7 +67,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     cd ..
 
    # download for automatic geoid sep
-    sudo wget --no-check-certificate https://earth-info.nga.mil/GandG/wgs84/gravitymod/egm96/binary/WW15MGH.DAC
+    sudo wget http://download.glidernet.org/common/WW15MGH.DAC
 
     echo "I will now open the OGN configuration file in nano. Please make proper adjustments."
     echo "Most importantly, check latitude, longitude and altitude."
