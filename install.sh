@@ -26,7 +26,7 @@ echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     sudo apt install --yes libncurses-dev librtlsdr-dev libbladerf-dev lighttpd debhelper dh-systemd libhackrf-dev liblimesuite-dev
     mkdir dump1090 && cd dump1090
-    git clone https://github.com/flightaware/dump1090.git
+    git clone https://github.com/VirusPilot/dump1090.git
     cd dump1090
     dpkg-buildpackage -b --no-sign
     cd ..
