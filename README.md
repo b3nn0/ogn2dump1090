@@ -1,5 +1,5 @@
 # ogn2dump1090
-Simple tool to inject OpenGliderNet Data into a dump1090 instance for display on a unified map
+Simple tool to inject OpenGliderNet Data into a `dump1090-fa` instance (optionally with `tar1090` as an additional webinterface) for display on a unified map
 
 WORK IN PROGRESS
 
@@ -34,7 +34,7 @@ cd ogn2dump1090
 ./install.sh
 ```
 and press `y` a couple of times
-After a reboot, you should be able to open http://raspberrypi/skyaware/
+After a reboot, you should be able to open http://raspberrypi/skyaware/ (or optionally http://raspberrypi/tar1090)
 and see both, dump1090 AND flarm aircraft on the web interface.
 
 For further configuration modifications, please edit:
