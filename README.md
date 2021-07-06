@@ -1,7 +1,7 @@
 # ogn2dump1090
 Simple tool to inject OpenGliderNet Data into a dump1090 instance for display on a unified map
 
-WORK IN PROGRESS DO NOT USE YET
+WORK IN PROGRESS
 
 # Getting started
 ## Manual Setup
@@ -34,7 +34,7 @@ cd ogn2dump1090
 ./install.sh
 ```
 and press `y` a couple of times
-After a reboot, you should be able to open http://raspberrypi/dump1090-fa/
+After a reboot, you should be able to open http://raspberrypi/skyaware/
 and see both, dump1090 AND flarm aircraft on the web interface.
 
 For further configuration modifications, please edit:
@@ -43,12 +43,11 @@ For further configuration modifications, please edit:
 
 `/etc/default/dump1090-fa` (dump1090-fa configuration, e.g. --device-index --gain --ppm --lat --lon)
 
-## Mlat support
-TODO
-you can run mlat-client to connect to your favourite mlat server. The results will be seen on the web interface.
+## mlat support
+You can run mlat-client to connect to your favourite mlat server. The results will be seen on the web interface.
 
-## Adding OpenAIP Airspaces to the map
-go to /usr/share/dump1090-fa/html and edit layers.js.
+## Adding OpenAIP Airspaces to the map - work in progress!!
+go to /usr/share/skyaware/html and edit layers.js.
 At the end of the file, right before the line that says `return layers;`, add this code:
 ```
         layers.push(new ol.layer.Tile({
