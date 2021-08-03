@@ -63,7 +63,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     tar xzf rtlsdr-ogn-bin-*.tgz
     rm rtlsdr-ogn-bin-*.tgz
     cd rtlsdr-ogn
-    . setup-rpi.sh
+    ./setup-rpi.sh
     cd ..
 
    # download for automatic geoid sep
