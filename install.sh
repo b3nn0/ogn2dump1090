@@ -20,7 +20,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 fi
 
 echo
-read -t 1 -n 10000 discard 
+read -t 1 -n 10000 discard
 read -p "Install and setup dump1090-fa? [y/n]" -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -54,10 +54,10 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo blacklist dvb_usb_rtl28xxu | sudo tee -a /etc/modprobe.d/rtl-glidernet-blacklist.conf
     echo blacklist dvb_usb_v2 | sudo tee -a /etc/modprobe.d/rtl-glidernet-blacklist.conf
     echo blacklist rtl8xxxu | sudo tee -a /etc/modprobe.d/rtl-glidernet-blacklist.conf
-    
+
     sudo apt install --yes libconfig9 libjpeg62-turbo lynx ntpdate ntp
 
-    cp /boot/rtlsdr-ogn-bin-arm64-0.2.9.tgz .    
+    cp /boot/rtlsdr-ogn-bin-arm64-0.2.9.tgz .
 
 #    if grep -q "Pi 4" /proc/device-tree/model; then
 #        wget http://download.glidernet.org/arm/rtlsdr-ogn-bin-ARM-latest.tgz
@@ -81,11 +81,11 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo "Then save the file (Crtl+O, Return) and quit nano (Ctrl+X)."
     read -t 1 -n 10000 discard
     read -p "Press return to continue"
-    nano ogn_setup.conf  
+    nano ogn_setup.conf
 fi
 
 echo
-read -t 1 -n 10000 discard 
+read -t 1 -n 10000 discard
 read -p "Install service file/start ogn2dump1090 on boot [y/n]" -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -105,7 +105,7 @@ fi
 
 echo
 read -t 1 -n 10000 discard 
-read -p "The RaspberryPi now needs to be rebooted to make sure all permissions are set correctly. Afterwards 
+read -p "The RaspberryPi now needs to be rebooted to make sure all permissions are set correctly. Afterwards
 you should be able to access the dump1090-fa interface on
 http://raspberrypi/skyaware.
 Reboot now? [y/n]"
