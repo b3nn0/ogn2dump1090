@@ -26,7 +26,7 @@ echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     sudo apt install --yes libncurses-dev librtlsdr-dev libbladerf-dev lighttpd debhelper dh-systemd libhackrf-dev liblimesuite-dev
     mkdir dump1090 && cd dump1090
-    git clone https://github.com/VirusPilot/dump1090.git
+    git clone -dev https://github.com/flightaware/dump1090.git
     cd dump1090
     dpkg-buildpackage -b --no-sign
     cd ..
@@ -53,13 +53,15 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo blacklist rtl2830 | sudo tee -a /etc/modprobe.d/rtl-glidernet-blacklist.conf
     echo blacklist dvb_usb_rtl28xxu | sudo tee -a /etc/modprobe.d/rtl-glidernet-blacklist.conf
     
-    sudo apt install --yes libconfig9 libjpeg8 lynx ntpdate ntp
+    sudo apt install --yes libconfig9 libjpeg62-turbo lynx ntpdate ntp
 
-    if grep -q "Pi 4" /proc/device-tree/model; then
-        wget http://download.glidernet.org/arm/rtlsdr-ogn-bin-ARM-latest.tgz
-    else
-        wget http://download.glidernet.org/rpi-gpu/rtlsdr-ogn-bin-RPI-GPU-latest.tgz
-    fi
+    cp /boot/rtlsdr-ogn-bin-arm64-0.2.9.tgz .    
+
+#    if grep -q "Pi 4" /proc/device-tree/model; then
+#        wget http://download.glidernet.org/arm/rtlsdr-ogn-bin-ARM-latest.tgz
+#    else
+#        wget http://download.glidernet.org/rpi-gpu/rtlsdr-ogn-bin-RPI-GPU-latest.tgz
+#    fi
     tar xzf rtlsdr-ogn-bin-*.tgz
     rm rtlsdr-ogn-bin-*.tgz
     cd rtlsdr-ogn
