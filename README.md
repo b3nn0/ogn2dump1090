@@ -39,9 +39,24 @@ and see both, dump1090 AND flarm aircraft on the web interface.
 
 For further configuration modifications, please edit:
 
-`/home/pi/ogn2dump1090/ogn_setup.conf` (ogn configuration)
+### OGN configuration:
+`/home/pi/ogn2dump1090/ogn_setup.conf`
 
-`/etc/default/dump1090-fa` (dump1090-fa configuration, e.g. --device-index --gain --ppm --lat --lon)
+### dump1090 configuration (up to dump1090 verison 5)
+`/etc/default/dump1090-fa`
+
+RECEIVER_OPTIONS="--device-index 0 --gain 28.0 --ppm 0 --lat 50.0 --lon 10.0" (example)
+
+### dump1090 configuration (dump1090 as of version 6)
+`/etc/default/dump1090-fa`
+
+RECEIVER_SERIAL=1090 (example)
+
+RECEIVER_GAIN=60 (default)
+
+ADAPTIVE_DYNAMIC_RANGE=yes (default)
+
+ADAPTIVE_BURST=yes (default=no, yes=recommended to receive closeby traffic but range will decrease accordingly)
 
 ## mlat support
 You can run mlat-client to connect to your favourite mlat server. The results will be seen on the web interface.
