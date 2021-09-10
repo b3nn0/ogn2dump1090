@@ -106,7 +106,7 @@ read -t 1 -n 10000 discard
 read -p "The RaspberryPi now needs to be rebooted to make sure all permissions are set correctly. Afterwards 
 you should be able to access the dump1090-fa interface on
 http://raspberrypi/skyaware.
-Reboot now? [y/n]"
+Reboot now? [y/n]" -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     sudo reboot
