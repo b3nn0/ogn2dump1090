@@ -52,11 +52,15 @@ RECEIVER_OPTIONS="--device-index 0 --gain 28.0 --ppm 0 --lat 50.0 --lon 10.0" (e
 
 RECEIVER_SERIAL=1090 (example)
 
-RECEIVER_GAIN=60 (default)
+RECEIVER_GAIN=30 (60 = default, 30 is a good starting point for a good receiver setup at the airport close to the taxiways)
 
-ADAPTIVE_DYNAMIC_RANGE=yes (default)
+ADAPTIVE_DYNAMIC_RANGE=no (yes = default)
 
-ADAPTIVE_BURST=yes (default=no, yes=recommended to receive closeby traffic but range will decrease accordingly)
+ADAPTIVE_BURST=yes (default = no, yes = recommended to receive closeby traffic but range will decrease accordingly)
+
+ADAPTIVE_MIN_GAIN= (default = empty = no limit)
+
+ADAPTIVE_MAX_GAIN=30 (default = empty = no limit)
 
 ## mlat support
 You can run mlat-client to connect to your favourite mlat server. The results will be seen on the web interface.
