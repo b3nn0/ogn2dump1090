@@ -57,7 +57,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo blacklist dvb_usb_v2 | sudo tee -a /etc/modprobe.d/rtl-glidernet-blacklist.conf
     echo blacklist rtl8xxxu | sudo tee -a /etc/modprobe.d/rtl-glidernet-blacklist.conf
     
-    sudo apt install --yes libconfig9 libjpeg62-turbo-dev lynx ntp ntpdate procserv telnet
+    sudo apt install --yes libconfig9 libjpeg62-turbo-dev lynx ntpdate ntp
 
     # download and unpack version 0.2.9
     git clone https://github.com/pjalocha/ogn-frb-search
