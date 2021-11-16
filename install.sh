@@ -25,10 +25,11 @@ read -t 1 -n 10000 discard
 read -p "Install and setup dump1090-fa? [y/n]" -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-    sudo apt install --yes libncurses-dev librtlsdr-dev libbladerf-dev lighttpd debhelper dh-systemd libhackrf-dev liblimesuite-dev
+    sudo apt install --yes libncurses-dev librtlsdr-dev libbladerf-dev lighttpd debhelper libhackrf-dev liblimesuite-dev
     mkdir dump1090 && cd dump1090
     git clone https://github.com/VirusPilot/dump1090.git
     cd dump1090
+    sed -i  's/, dh-systemd/debhelper/' ./debian/control # https://github.com/flightaware/dump1090/issues/160
     dpkg-buildpackage -b --no-sign
     cd ..
     sudo dpkg -i dump1090-fa_*.deb
