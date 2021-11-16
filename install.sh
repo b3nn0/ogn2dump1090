@@ -1,10 +1,11 @@
 #!/bin/bash
 #set -x
-echo "Simple installer script to work on a CLEAN raspbian buster image."
+echo "Simple installer script to work on a CLEAN RasPiOS Lite Image."
 echo "Tested on RaspberryPi 3b, 3b+ and 4b"
 echo "if you e.g. already have dump1090-fa or dump1090-mutability running, you can skip these steps"
 read -p "Press return to continue"
-sudo apt update
+
+sudo timedatectl set-timezone Europe/Berlin
 
 echo
 read -t 1 -n 10000 discard # discard input buffer
@@ -55,15 +56,16 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo blacklist dvb_usb_v2 | sudo tee -a /etc/modprobe.d/rtl-glidernet-blacklist.conf
     echo blacklist rtl8xxxu | sudo tee -a /etc/modprobe.d/rtl-glidernet-blacklist.conf
     
-    sudo apt install --yes libconfig9 libjpeg8 lynx ntpdate ntp
+    sudo apt install --yes libconfig9 libjpeg62-turbo-dev lynx ntp ntpdate procserv telnet
 
-    if grep -q "Pi 4" /proc/device-tree/model; then
-        wget http://download.glidernet.org/arm/rtlsdr-ogn-bin-ARM-latest.tgz
-    else
-        wget http://download.glidernet.org/rpi-gpu/rtlsdr-ogn-bin-RPI-GPU-latest.tgz
+    # download and unpack version 0.2.9
+    git clone https://github.com/pjalocha/ogn-frb-search
+    ARCH=$(arch)
+    if [ $ARCH == aarch64 ]; then # arm64
+        tar xvf ogn-frb-search/rtlsdr-ogn/rtlsdr-ogn-bin-arm64-0.2.9_Buster.tgz
+    else # armhf
+        tar xvf ogn-frb-search/rtlsdr-ogn/rtlsdr-ogn-bin-ARM-0.2.9_Jessie.tgz
     fi
-    tar xzf rtlsdr-ogn-bin-*.tgz
-    rm rtlsdr-ogn-bin-*.tgz
     cd rtlsdr-ogn
     ./setup-rpi.sh
     cd ..
