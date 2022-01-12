@@ -29,7 +29,6 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     mkdir dump1090 && cd dump1090
     git clone https://github.com/VirusPilot/dump1090.git
     cd dump1090
-    sed -i 's!, dh-systemd!!g' ./debian/control # https://github.com/flightaware/dump1090/issues/160
     dpkg-buildpackage -b --no-sign
     cd ..
     sudo dpkg -i dump1090-fa_*.deb
