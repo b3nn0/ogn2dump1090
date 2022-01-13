@@ -1,11 +1,8 @@
 # ogn2dump1090
 Simple tool to inject OpenGliderNet Data into a `dump1090-fa` instance (optionally with `tar1090` as an additional webinterface) for display on a unified map
 
-WORK IN PROGRESS
-
 # Getting started
-## Manual Setup
-### Dependencies
+## Manual Setup on a dump1090-fa instance
 ```
 sudo apt install --yes python3-pip
 sudo pip3 install ogn-client
@@ -20,10 +17,10 @@ Afterwards, you can simply run `./ogn2dump1090.py` and should be fine.
 This requires an already running dump1090-mutability or dump1090-fa instance with the --net argument.
 
 ## Automatic Setup
-This repository contains a simple setup script to install everything that's needed (including dump1090-fa)
-to a clean Raspbian Buster Raspberry Pi. It requires basic Raspberry Pi knowledge (i.e. installation connect via SSH and basic Linux shell stuff)
+This repository contains a simple setup script to install everything that's needed (including the latest dump1090-fa version)
+on a Pi3B or Pi4B with a fresh RasPiOS installed. It requires basic RasPiOS knowledge (i.e. installation connect via SSH and basic Linux shell stuff)
 To use it, follow these steps:
-- Flash a micro SD Card with Raspbian Buster and enable ssh by placing an empty file called ssh to its boot partition
+- Flash a micro SD Card with the latest RasPiOS Image and enable ssh by placing an empty file called ssh to its boot partition
 - Connect to it via ssh
 - run these commands:
 ```
@@ -35,7 +32,7 @@ cd ogn2dump1090
 ```
 and press `y` a couple of times
 After a reboot, you should be able to open http://raspberrypi/skyaware/ (or optionally http://raspberrypi/tar1090)
-and see both, dump1090 AND flarm aircraft on the web interface.
+and see Mode-S, ADS-B and OGN/FLARM aircraft on the web interface.
 
 For further configuration modifications, please edit:
 
