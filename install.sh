@@ -56,18 +56,17 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo blacklist dvb_usb_v2 | sudo tee -a /etc/modprobe.d/rtl-glidernet-blacklist.conf
     echo blacklist rtl8xxxu | sudo tee -a /etc/modprobe.d/rtl-glidernet-blacklist.conf
     
-    sudo apt install --yes libconfig9 libjpeg62-turbo-dev lynx ntpdate ntp
-
     # download and unpack version 0.2.9
-    git clone https://github.com/pjalocha/ogn-frb-search
     ARCH=$(arch)
     if [ $ARCH == aarch64 ]; then # arm64
-        tar xvf ogn-frb-search/rtlsdr-ogn/rtlsdr-ogn-bin-arm64-0.2.9_Buster.tgz
+        wget https://github.com/VirusPilot/ogn-pi34/raw/master/rtlsdr-ogn-bin-arm64-0.2.9_debian_bullseye.tgz
     else # armhf
-        tar xvf ogn-frb-search/rtlsdr-ogn/rtlsdr-ogn-bin-ARM-0.2.9_Jessie.tgz
+        wget  https://github.com/VirusPilot/ogn-pi34/raw/master/rtlsdr-ogn-bin-ARM-0.2.9_raspbian_buster.tgz
     fi
+    tar xvf *.tgz
+    rm -f *.tgz
     cd rtlsdr-ogn
-    ./setup-rpi.sh
+    /bin/bash ./setup-rpi.sh
     cd ..
 
    # download for automatic geoid sep
