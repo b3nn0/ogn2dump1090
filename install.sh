@@ -14,8 +14,9 @@ echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo "installing base dependencies"
     sudo apt install --yes python3-pip rtl-sdr
-    git clone https://github.com/mutability/mlat-client.git
+    git clone https://github.com/wiedehopf/mlat-client.git
     cd mlat-client
+    sudo python3 setup.py build
     sudo python3 setup.py install
     cd ..
 fi
