@@ -18,14 +18,7 @@ PATTERN_TELNET_50001 = re.compile(r"""
     (?P<ground_speed>\d+\.\d+)m/s\s*
     (?P<track>\d+\.\d+)deg\s*
     (?P<turn_rate>[+-]\d+\.\d+)deg/s\s*
-    (?P<magic_number>[0-9a-zA-Z]+)\s*
-    (?P<gps_status>[0-9x]+)m\s*
-    (?P<channelinfo>.+?:\S+)\s*
-    (?P<frequency_offset>[+-]\d+\.\d+)kHz\s*
-    (?P<decode_quality>\d+\.\d+)/(?P<signal_quality>\d+\.\d+)dB/(?P<demodulator_type>\d+)\s+
-    (?P<error_count>\d+)e\s*
-    (?P<distance>\d+\.\d+)km\s*
-    (?P<bearing>\d+\.\d+)deg\s*
+    .*
 """, re.VERBOSE | re.MULTILINE)
 
 class OgnReader(threading.Thread):
