@@ -6,7 +6,7 @@ Simple tool to inject OpenGliderNet Data into a `dump1090-fa` instance (optional
 ```
 sudo apt install --yes python3-pip
 sudo pip3 install ogn-client
-git clone https://github.com/mutability/mlat-client.git
+git clone https://github.com/wiedehopf/mlat-client.git
 cd mlat-client && sudo python3 setup.py install
 ```
 Now install the OGN Client as described here: http://wiki.glidernet.org/wiki:manual-installation-guide
