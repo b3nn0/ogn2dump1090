@@ -26,7 +26,7 @@ read -t 1 -n 10000 discard
 read -p "Install and setup dump1090-fa? [y/n]" -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-    sudo apt install --yes libncurses-dev librtlsdr-dev libbladerf-dev lighttpd debhelper libhackrf-dev liblimesuite-dev
+    sudo apt install --yes libncurses-dev librtlsdr-dev libbladerf-dev lighttpd debhelper libhackrf-dev liblimesuite-dev libsoapysdr-dev
     mkdir dump1090 && cd dump1090
     git clone https://github.com/VirusPilot/dump1090.git
     cd dump1090
@@ -56,10 +56,19 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo blacklist rtl8xxxu | sudo tee -a /etc/modprobe.d/rtl-glidernet-blacklist.conf
     
     # download and unpack version 0.2.9
-    ARCH=$(arch)
-    if [ $ARCH == aarch64 ]; then # arm64
+    ARCH=$(getconf LONG_BIT)
+    DIST=$(lsb_release -r -s)
+    if [ $ARCH -eq 64 ]; then
+        echo
+        echo "installing Bullseye 64bit version on" "$ARCH""bit" "Debian" "$DIST"
+        read -p "Press any key to continue"
+        echo
         wget https://github.com/VirusPilot/ogn-pi34/raw/master/rtlsdr-ogn-bin-arm64-0.2.9_debian_bullseye.tgz
-    else # armhf
+    else
+        echo
+        echo "installing Buster 32bit version on" "$ARCH""bit" "Debian" "$DIST"
+        read -p "Press any key to continue"
+        echo
         wget  https://github.com/VirusPilot/ogn-pi34/raw/master/rtlsdr-ogn-bin-ARM-0.2.9_raspbian_buster.tgz
     fi
     tar xvf *.tgz
