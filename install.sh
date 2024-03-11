@@ -5,15 +5,13 @@ echo "Tested on RaspberryPi 3b, 3b+ and 4b"
 echo "if you e.g. already have dump1090-fa or dump1090-mutability running, you can skip these steps"
 read -p "Press return to continue"
 
-sudo timedatectl set-timezone Europe/Berlin
-
 echo
 read -t 1 -n 10000 discard # discard input buffer
-read -p "Install base dependencies? [y/n]" -n 1 -r
+read -p "Install mlat-client? [y/n]" -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-    echo "installing base dependencies"
-    sudo apt install --yes python3-pip rtl-sdr
+    sudo apt update
+    sudo apt install --yes python3-pip
     git clone https://github.com/wiedehopf/mlat-client.git
     cd mlat-client
     sudo python3 setup.py build
@@ -26,11 +24,12 @@ read -t 1 -n 10000 discard
 read -p "Install and setup dump1090-fa? [y/n]" -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-    sudo apt install --yes libncurses-dev librtlsdr-dev libbladerf-dev lighttpd debhelper libhackrf-dev liblimesuite-dev libsoapysdr-dev
+    sudo apt update
+    sudo apt install --yes libncurses-dev librtlsdr-dev lighttpd debhelper
     mkdir dump1090 && cd dump1090
     git clone https://github.com/VirusPilot/dump1090.git
     cd dump1090
-    dpkg-buildpackage -b --no-sign
+    dpkg-buildpackage -b --no-sign --build-profiles=custom,rtlsdr
     cd ..
     sudo dpkg -i dump1090-fa_*.deb
     cd ..
@@ -55,21 +54,21 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo blacklist dvb_usb_v2 | sudo tee -a /etc/modprobe.d/rtl-glidernet-blacklist.conf
     echo blacklist rtl8xxxu | sudo tee -a /etc/modprobe.d/rtl-glidernet-blacklist.conf
     
-    # download and unpack version 0.2.9
+    # download and unpack version 0.3.0
     ARCH=$(getconf LONG_BIT)
     DIST=$(lsb_release -r -s)
     if [ $ARCH -eq 64 ]; then
         echo
-        echo "installing Bullseye 64bit version on" "$ARCH""bit" "Debian" "$DIST"
+        echo "installing 64bit version on" "$ARCH""bit" "Debian" "$DIST"
         read -p "Press any key to continue"
         echo
-        wget https://github.com/VirusPilot/ogn-pi34/raw/master/rtlsdr-ogn-bin-arm64-0.2.9_debian_bullseye.tgz
+        wget http://download.glidernet.org/arm64/rtlsdr-ogn-bin-arm64-0.3.0.tgz
     else
         echo
-        echo "installing Buster 32bit version on" "$ARCH""bit" "Debian" "$DIST"
+        echo "installing 32bit version on" "$ARCH""bit" "Debian" "$DIST"
         read -p "Press any key to continue"
         echo
-        wget  https://github.com/VirusPilot/ogn-pi34/raw/master/rtlsdr-ogn-bin-ARM-0.2.9_raspbian_buster.tgz
+        wget  http://download.glidernet.org/arm/rtlsdr-ogn-bin-ARM-0.3.0.tgz
     fi
     tar xvf *.tgz
     rm -f *.tgz
@@ -78,7 +77,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     cd ..
 
    # download for automatic geoid sep
-    sudo wget http://download.glidernet.org/common/WW15MGH.DAC
+    wget http://download.glidernet.org/common/WW15MGH.DAC
 
     echo "I will now open the OGN configuration file in nano. Please make proper adjustments."
     echo "Most importantly, check latitude, longitude and altitude."
