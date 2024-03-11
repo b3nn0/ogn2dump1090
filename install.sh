@@ -62,7 +62,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo "installing 64bit version on" "$ARCH""bit" "Debian" "$DIST"
         read -p "Press any key to continue"
         echo
-        wget http://download.glidernet.org/arm64/rtlsdr-ogn-bin-arm64-0.3.0.tgz
+        wget  http://download.glidernet.org/arm/rtlsdr-ogn-bin-ARM-0.3.0.tgz
     else
         echo
         echo "installing 32bit version on" "$ARCH""bit" "Debian" "$DIST"
