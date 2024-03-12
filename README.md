@@ -35,7 +35,7 @@ After a reboot, you should be able to open http://raspberrypi/skyaware/ (or opti
 and see Mode-S, ADS-B and OGN/FLARM aircraft on the web interface.
 
 ## Full-Automatic Setup
-- no interaction, best for a fresh install on RasPiOS 64bit Bookworm
+- no interaction besides configuration credentials, best for a fresh install on RasPiOS 64bit Bookworm
 - run these commands:
 ```
 sudo apt update
