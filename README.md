@@ -2,7 +2,7 @@
 Simple tool to inject OpenGliderNet Data into a `dump1090-fa` instance (optionally with `tar1090` as an additional webinterface) for display on a unified map
 
 # Getting started
-## Manual Setup on a dump1090-fa instance
+## Manual Setup on an existing dump1090-fa instance
 ```
 sudo apt install --yes python3-pip
 sudo pip3 install ogn-client
@@ -16,8 +16,8 @@ Now open config.py and set the path to your OGN installation.
 Afterwards, you can simply run `./ogn2dump1090.py` and should be fine.
 This requires an already running dump1090-mutability or dump1090-fa instance with the --net argument.
 
-## Automatic Setup
-This repository contains a simple setup script to install everything that's needed (including the latest dump1090-fa version)
+## Half-Automatic Setup
+This repository contains a simple half-automatic setup script to install everything that's needed (including the latest dump1090-fa version)
 on a Pi3B or Pi4B with a fresh RasPiOS installed. It requires basic RasPiOS knowledge (i.e. installation connect via SSH and basic Linux shell stuff)
 To use it, follow these steps:
 - Flash a micro SD Card with the latest RasPiOS Image and enable ssh by placing an empty file called ssh to its boot partition
@@ -33,6 +33,17 @@ cd ogn2dump1090
 and press `y` a couple of times
 After a reboot, you should be able to open http://raspberrypi/skyaware/ (or optionally http://raspberrypi/tar1090)
 and see Mode-S, ADS-B and OGN/FLARM aircraft on the web interface.
+
+## Full-Automatic Setup
+- no interaction, best for a fresh install on RasPiOS 64bit Bookworm
+- run these commands:
+```
+sudo apt update
+sudo apt install --yes git
+git clone https://github.com/b3nn0/ogn2dump1090.git
+cd ogn2dump1090
+./install-full.sh
+```
 
 For further configuration modifications, please edit:
 
