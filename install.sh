@@ -55,21 +55,20 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo blacklist dvb_usb_v2 | sudo tee -a /etc/modprobe.d/rtl-glidernet-blacklist.conf
     echo blacklist rtl8xxxu | sudo tee -a /etc/modprobe.d/rtl-glidernet-blacklist.conf
     
-    # download and unpack version 0.2.9
+    # download and unpack version 0.3.0
     ARCH=$(getconf LONG_BIT)
     DIST=$(lsb_release -r -s)
-    if [ $ARCH -eq 64 ]; then
-        echo
-        echo "installing Bullseye 64bit version on" "$ARCH""bit" "Debian" "$DIST"
-        read -p "Press any key to continue"
-        echo
-        wget https://github.com/VirusPilot/ogn-pi34/raw/master/rtlsdr-ogn-bin-arm64-0.2.9_debian_bullseye.tgz
+    if [ "$ARCH" -eq 64 ] && [ "$DIST" -ge 12 ]; then
+        wget http://download.glidernet.org/arm64/rtlsdr-ogn-bin-arm64-0.3.0.tgz
     else
-        echo
-        echo "installing Buster 32bit version on" "$ARCH""bit" "Debian" "$DIST"
-        read -p "Press any key to continue"
-        echo
-        wget  https://github.com/VirusPilot/ogn-pi34/raw/master/rtlsdr-ogn-bin-ARM-0.2.9_raspbian_buster.tgz
+        if [ "$ARCH" -eq 32 ]; then
+            wget http://download.glidernet.org/arm/rtlsdr-ogn-bin-ARM-0.3.0.tgz
+        else
+            echo
+            echo "wrong platform for this script, exiting"
+            echo
+            exit
+        fi
     fi
     tar xvf *.tgz
     rm -f *.tgz
