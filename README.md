@@ -50,13 +50,7 @@ For further configuration modifications, please edit:
 ### OGN configuration:
 `/home/pi/ogn2dump1090/ogn_setup.conf`
 
-### dump1090 configuration (up to dump1090 verison 5)
-`/etc/default/dump1090-fa` needs to be modified according to your setup, e.g.
-```
-RECEIVER_OPTIONS="--device-index 0 --gain 28.0 --ppm 0 --lat 50.0 --lon 10.0"
-```
-
-### dump1090 configuration (dump1090 as of version 6)
+### dump1090 configuration
 `/etc/default/dump1090-fa.default` has been modified accordingly in the underlying dump1090-fa fork
 
 `/etc/default/dump1090-fa` needs to be modified according to your setup, e.g.
