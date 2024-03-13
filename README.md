@@ -1,7 +1,35 @@
 # ogn2dump1090
-Simple tool to inject OpenGliderNet Data into a `dump1090-fa` instance (optionally with `tar1090` as an additional webinterface) for display on a unified map
+Simple tool to inject Open Glider Network Traffic into a `dump1090-fa` instance for display on a unified map (will be displayed as "MLAT" traffic). It contains setup scripts to install everything that's needed (including a modified dump1090-fa instance) on a Pi3B or Pi4B with a fresh RasPiOS (idealy 64bit Bookworm) installed. It requires basic RasPiOS knowledge (i.e. connecting via SSH and basic Linux shell stuff)
 
-# Getting started
+## preparation of credentials
+During the setup process you will be automatically asked to edit `/home/pi/ogn2dump1090/ogn_setup.conf` and `/etc/default/dump1090-fa` for which you should have the following credentials at hand:
+- SDR index numbers **or** SDR serial numbers (SN) for both the OGN and ADS-B SDRs
+- SDR ppm calibration (only required for non-TCXO SDRs), this can also be measured and modified accordingly post install if unknown
+- OGN station name, e.g. your local airport ICAO code (max. 9 characters), please refer to http://wiki.glidernet.org/receiver-naming-convention
+- station coordinates and altitude for both the OGN and ADS-B configuration file
+
+## Full-Automatic Setup
+- no interaction besides configuration credentials, best for a fresh install on RasPiOS 64bit Bookworm
+- connect via ssh
+- run these commands:
+```
+sudo apt update
+sudo apt install --yes git
+git clone https://github.com/b3nn0/ogn2dump1090.git
+cd ogn2dump1090
+./install-full.sh
+```
+## Half-Automatic Setup
+- connect via ssh
+- run these commands:
+```
+sudo apt update
+sudo apt install --yes git
+git clone https://github.com/b3nn0/ogn2dump1090.git
+cd ogn2dump1090
+./install.sh
+```
+
 ## Manual Setup on an existing dump1090-fa instance
 ```
 sudo apt install --yes python3-pip
@@ -16,52 +44,9 @@ Now open config.py and set the path to your OGN installation.
 Afterwards, you can simply run `./ogn2dump1090.py` and should be fine.
 This requires an already running dump1090-mutability or dump1090-fa instance with the --net argument.
 
-## Half-Automatic Setup
-This repository contains a simple half-automatic setup script to install everything that's needed (including the latest dump1090-fa version)
-on a Pi3B or Pi4B with a fresh RasPiOS installed. It requires basic RasPiOS knowledge (i.e. installation connect via SSH and basic Linux shell stuff)
-To use it, follow these steps:
-- Flash a micro SD Card with the latest RasPiOS Image and enable ssh by placing an empty file called ssh to its boot partition
-- Connect to it via ssh
-- run these commands:
-```
-sudo apt update
-sudo apt install --yes git
-git clone https://github.com/b3nn0/ogn2dump1090.git
-cd ogn2dump1090
-./install.sh
-```
-and press `y` a couple of times
-After a reboot, you should be able to open http://raspberrypi/skyaware/ (or optionally http://raspberrypi/tar1090)
-and see Mode-S, ADS-B and OGN/FLARM aircraft on the web interface.
-
-## Full-Automatic Setup
-- no interaction besides configuration credentials, best for a fresh install on RasPiOS 64bit Bookworm
-- run these commands:
-```
-sudo apt update
-sudo apt install --yes git
-git clone https://github.com/b3nn0/ogn2dump1090.git
-cd ogn2dump1090
-./install-full.sh
-```
-
-For further configuration modifications, please edit:
-
-### OGN configuration:
-`/home/pi/ogn2dump1090/ogn_setup.conf`
-
-### dump1090 configuration
-`/etc/default/dump1090-fa.default` has been modified accordingly in the underlying dump1090-fa fork
-
-`/etc/default/dump1090-fa` needs to be modified according to your setup, e.g.
-```
-RECEIVER_SERIAL=1090
-RECEIVER_LAT=50.0
-RECEIVER_LON=10.0
-```
-
-## mlat support
-You can run mlat-client to connect to your favourite mlat server. The results will be seen on the web interface.
+## For further configuration modifications, please edit:
+- OGN configuration: `/home/pi/ogn2dump1090/ogn_setup.conf`
+- dump1090-fa configuration: `/etc/default/dump1090-fa`
 
 ## Adding OpenAIP Airspaces to the map - work in progress!!
 go to /usr/share/skyaware/html and edit layers.js.
