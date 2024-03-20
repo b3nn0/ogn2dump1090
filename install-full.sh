@@ -57,10 +57,10 @@ sudo nano /etc/default/dump1090-fa
 
 # install OGN
 if [ "$ARCH" -eq 64 ] && [ "$DIST" -ge 12 ]; then
-  wget http://download.glidernet.org/arm64/rtlsdr-ogn-bin-arm64-0.3.0.tgz
+  wget http://download.glidernet.org/arm64/rtlsdr-ogn-bin-arm64-0.3.2.tgz
 else
   if [ "$ARCH" -eq 32 ]; then
-    wget http://download.glidernet.org/arm/rtlsdr-ogn-bin-ARM-0.3.0.tgz
+    wget http://download.glidernet.org/arm/rtlsdr-ogn-bin-ARM-0.3.2.tgz
   else
     echo
     echo "wrong platform for this script, exiting"
