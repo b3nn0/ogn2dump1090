@@ -59,7 +59,7 @@ sudo nano /etc/default/dump1090-fa
 if [ "$ARCH" -eq 64 ] && [ "$DIST" -ge 12 ]; then
   wget http://download.glidernet.org/arm64/rtlsdr-ogn-bin-arm64-0.3.2.tgz
 else
-  if [ "$ARCH" -eq 32 ]; then
+  if [ "$ARCH" -eq 32 ] && [ "$DIST" -ge 11 ]; then
     wget http://download.glidernet.org/arm/rtlsdr-ogn-bin-ARM-0.3.2.tgz
   else
     echo
