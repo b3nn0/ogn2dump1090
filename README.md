@@ -9,7 +9,7 @@ During the setup process you will be automatically asked to edit `/home/pi/ogn2d
 - station coordinates and altitude for both the OGN and ADS-B configuration file
 
 ## Full-Automatic Setup
-- no interaction besides configuration credentials, best for a fresh install on RasPiOS 64bit Bookworm
+- no interaction besides configuration credentials, for a fresh install on RasPiOS 64bit Bookworm (32bit Bullseye and newer is also supported)
 - connect via ssh
 - run these commands:
 ```
