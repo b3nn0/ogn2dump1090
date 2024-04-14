@@ -7,7 +7,7 @@ import json
 
 
 # Shamelessly taken from https://github.com/glidernet/python-ogn-client/blob/master/ogn/parser/pattern.py
-# and adapted for OGN 2.8 stack (and reduced a bit for fields we don't need)
+# and adapted for OGN 0.3.2 stack (and reduced a bit for fields we don't need)
 PATTERN_TELNET_50001 = re.compile(r"""
     (?P<pps_offset>\d\.\d+)sec:(?P<frequency>\d+\.\d+)MHz:\s+
     (?P<aircraft_type>.):(?P<address_type>\d:)?(?P<address>[A-F0-9]{6})\s
