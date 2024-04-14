@@ -4,20 +4,21 @@ import subprocess
 import re
 import os
 import json
+import logging
+import ogn.parser
 
 
 # Shamelessly taken from https://github.com/glidernet/python-ogn-client/blob/master/ogn/parser/pattern.py
-# and adapted for OGN 2.8 stack (and reduced a bit for fields we don't need)
+# and adapted for OGN 0.3.2 stack (and reduced a bit for fields we don't need)
 PATTERN_TELNET_50001 = re.compile(r"""
     (?P<pps_offset>\d\.\d+)sec:(?P<frequency>\d+\.\d+)MHz:\s+
-    (?P<aircraft_type>.):(?P<address_type>\d):(?P<address>[A-F0-9]{6})\s
+    (?P<aircraft_type>.):(?P<address>[A-F0-9]{6})\s
     (?P<timestamp>\d{6}):\s
     \[\s*(?P<latitude>[+-]\d+\.\d+),\s*(?P<longitude>[+-]\d+\.\d+)\]deg\s*
     (?P<altitude>\d+)m\s*
     (?P<climb_rate>[+-]\d+\.\d+)m/s\s*
     (?P<ground_speed>\d+\.\d+)m/s\s*
     (?P<track>\d+\.\d+)deg\s*
-    (?P<turn_rate>[+-]\d+\.\d+)deg/s\s*
     .*
 """, re.VERBOSE | re.MULTILINE)
 
@@ -44,24 +45,24 @@ class OgnReader(threading.Thread):
                 call = dev['registration']
                 self.ogn_devicedb[devid] = call
         except:
-            print('Failed to read device db')
+            logging.warn('Failed to read device db')
     
     def run(self):
-        print('OgnReader startup')
+        logging.info('OgnReader startup')
         while True:
             self.proc_rf = subprocess.Popen([config.ogn_rf_cmd, config.ogn_config], stdin=subprocess.PIPE)
-            print('Started OGN-RF')
+            logging.info('Started OGN-RF')
             self.proc_decode = subprocess.Popen([config.ogn_decode_cmd, config.ogn_config], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-            print('Started OGN-Decode')
+            logging.info('Started OGN-Decode')
             try:
                 for line in iter(self.proc_decode.stdout.readline, b''):
                     #print(line)
                     self.parse_line(line)
             except:
-                print('OGN error.. restarting')
+                logging.error('OGN error.. restarting')
                 self.proc_rf.kill()
                 self.proc_decode.kill()
-            print('OGN process finished. Restarting.')
+            logging.warn('OGN process finished. Restarting.')
 
 
     def parse_line(self, line):
@@ -77,4 +78,9 @@ class OgnReader(threading.Thread):
                 self.callback(res)
         except:
             pass
+
+    def aprsmessage(self, msg):
+        strmsg = msg.decode('utf-8')
+        message = ogn.parser.parse(msg)
+        print(f'{message}')
         

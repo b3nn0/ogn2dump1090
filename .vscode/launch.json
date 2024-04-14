@@ -5,6 +5,14 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: ogn2dump1090",
+            "type": "python",
+            "request": "launch",
+            "program": "ogn2dump1090.py",
+            "args": ["-a", "asdfasdfas.sdfhgufdshgjs.com"],
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Python: ogn2dump1090 remote",
             "type": "python",
             "request": "attach",
@@ -14,13 +22,6 @@
                 "localRoot": "${workspaceFolder}",
                 "remoteRoot": "/home/pi/ogn2dump1090"
             }]
-        },
-        {
-            "name": "Python: ogn2dump1090",
-            "type": "python",
-            "request": "launch",
-            "program": "ogn2dump1090.py",
-            "console": "integratedTerminal"
         },
         {
             "name": "Python: Current file",
