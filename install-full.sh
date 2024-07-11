@@ -11,18 +11,19 @@ sudo apt install debhelper -y
 ARCH=$(getconf LONG_BIT)
 DIST=$(lsb_release -r -s)
 
-# install rtl-sdr-blog driver
-git clone https://github.com/rtlsdrblog/rtl-sdr-blog
-cd rtl-sdr-blog
-sudo dpkg-buildpackage -b --no-sign
-cd ..
-
-sudo dpkg -i librtlsdr0_*.deb
-sudo dpkg -i librtlsdr-dev_*.deb
-sudo dpkg -i rtl-sdr_*.deb
+# install librtlsdr from http://ftp.de.debian.org/debian/pool/main/r/rtl-sdr
+if [ $ARCH -eq 64 ]; then
+    wget http://ftp.de.debian.org/debian/pool/main/r/rtl-sdr/librtlsdr0_2.0.2-2_arm64.deb
+    wget http://ftp.de.debian.org/debian/pool/main/r/rtl-sdr/librtlsdr-dev_2.0.2-2_arm64.deb
+    wget http://ftp.de.debian.org/debian/pool/main/r/rtl-sdr/rtl-sdr_2.0.2-2_arm64.deb
+else
+    wget http://ftp.de.debian.org/debian/pool/main/r/rtl-sdr/librtlsdr0_2.0.2-2_armhf.deb
+    wget http://ftp.de.debian.org/debian/pool/main/r/rtl-sdr/librtlsdr-dev_2.0.2-2_armhf.deb
+    wget http://ftp.de.debian.org/debian/pool/main/r/rtl-sdr/rtl-sdr_2.0.2-2_armhf.deb
+fi
+sudo dpkg -i *.deb
 rm -f *.deb
-rm -f *.buildinfo
-rm -f *.changes
+sudo ldconfig
 
 echo blacklist rtl2832 | sudo tee /etc/modprobe.d/rtl-sdr-blacklist.conf
 echo blacklist r820t | sudo tee -a /etc/modprobe.d/rtl-sdr-blacklist.conf
