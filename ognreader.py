@@ -94,6 +94,11 @@ class OgnReader(threading.Thread):
         if len(strmsg) == 0:
             return
         try:
+            # python ogn lib doesn't like that there is no receiver string in our local messages.. fake one in
+            if strmsg.split(':')[0].count(',') == 1:
+                strmsg = strmsg.replace(':', ',XXX:', 1)
+
+
             msg = ogn.parser.parse(strmsg)
             if msg['aprs_type'] != 'position' or msg.get('altitude') is None:
                 return
