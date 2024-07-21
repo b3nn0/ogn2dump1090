@@ -96,6 +96,8 @@ class OgnReader(threading.Thread):
             return
         try:
             message = aprslib.parse(strmsg)
+            if 'latitude' not in message or 'longitude' not in message or 'altitude' not in message:
+                return
             # additional info seems to be in here...
             comment = message['comment'].split(' ')
             if comment[0].startswith('id'):
