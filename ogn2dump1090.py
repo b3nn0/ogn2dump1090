@@ -30,7 +30,7 @@ if __name__ == '__main__':
     
     # Start dummy APRS server
     aprsservers = args.aprsservers.split(',')
-    aprs_proxy = aprsproxy.AprsProxy(lambda msg : ogn_reader.aprsmessage(msg), forwardAddrs=aprsservers)
+    aprs_proxy = aprsproxy.AprsProxy(ogn_reader.aprsmessage, forwardAddrs=aprsservers)
     aprs_proxy.start()
 
     # dump1090 writer

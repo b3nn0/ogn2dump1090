@@ -26,57 +26,29 @@ class Dump1090Writer:
         #self.conn.connected = True
 
     
-    def send_msg(self, msg):
+    def send_msg(self, address, lat, lon, altFt, speedKt, climbRateFtMin=0, track=0, registration=None, anon=False):
         if self.conn is None or not self.conn.connected:
             self.connect()
 
         # Format as beast message
-        speed = float(msg['ground_speed']) * 1.94384 # m/s in kt
-        track = math.radians(float(msg['track']))
-        ns = speed * math.cos(track)
-        ew = speed * math.sin(track)
-        #print('send_position')
-        anon = False
-        if msg['address'].lower()[0:2] == 'DD' or msg['address'].lower()[0:1] == '1':
-            anon = True
-        self.conn.send_position(None, int(msg['address'], 16), float(msg['latitude']), float(msg['longitude']), float(msg['altitude']) * 3.28084,
-            ns, ew, int(float(msg['climb_rate']) * 196.85), msg['registration'], None, None, None, anon, False)
+        track = math.radians(track)
+        ns = speedKt * math.cos(track)
+        ew = speedKt * math.sin(track)
+
+        self.conn.send_position(None, address, lat, lon, altFt,
+            ns, ew, climbRateFtMin, registration, None, None, None, anon, False)
         asyncore.loop(count=1)
 
 if __name__ == '__main__':
+    import ognreader
     # Only for testing
     w = Dump1090Writer()
     w.connect()
-    print(w.conn.connected)
+
+    r = ognreader.OgnReader(w.send_msg)
     while True:
-        w.send_msg({
-            'pps_offset': '0.842',
-            'frequency': '868.191',
-            'aircraft_type': '8',
-            'address_type': '2',
-            'address': 'AAAAAA',
-            'timestamp': '145021',
-            'latitude': '+50.36201',
-            'longitude': '+9.22168',
-            'altitude': '555',
-            'climb_rate': '+0.0',
-            'ground_speed': '100',
-            'track': '270.0',
-            'turn_rate': '+0.0',
-            'magic_number': '4',
-            'gps_status': '03x05',
-            'channel': '00',
-            'flarm_timeslot': '_',
-            'ogn_timeslot': 'o',
-            'frequency_offset': '-9.23',
-            'decode_quality': '50.8',
-            'signal_quality': '67.0',
-            'demodulator_type': '0',
-            'error_count': '0',
-            'distance': '0.0',
-            'bearing': '000.0',
-            'phi': '+80.4',
-            'multichannel': None,
-            'baro_altitude': None,
-            'registration': 'D-EABC'})
+        r.aprsmessage(b"ICA3D24FE>OGFLR,qAS,Kippenhm:/085537h4812.03N/00748.45E'209/087/A=003754 !W04! id053D24FE +099fpm +0.0rot 0.0dB 1e +4.0kHz gps1x2")
+        r.aprsmessage(b"PAW404BF0>OGPAW,qAS,reg3:/085536h4913.52N\01244.77E^117/082/A=004049 !W60! id21404BF0 15.5dB +10.0kHz")
+        r.aprsmessage(b"FNT11189E>OGNFNT,qAS,LOIJ:/085536h4731.16N\01226.94En !W36! id3E11189E FNT71 sF1 cr4 5.4dB -19.4kHz 4e")
+        r.aprsmessage(b"FNT0113A5>OGNFNT,qAS,LOIJ:/085536h4727.91N/01232.96Eg090/020/A=003977 !W38! id1F0113A5 -314fpm FNT11 sF1 cr4 -0.6dB -17.9kHz")
         time.sleep(0.1)

@@ -5,7 +5,7 @@ import re
 import os
 import json
 import logging
-import ogn.parser
+import aprslib
 
 
 # Shamelessly taken from https://github.com/glidernet/python-ogn-client/blob/master/ogn/parser/pattern.py
@@ -69,18 +69,58 @@ class OgnReader(threading.Thread):
         try:
             search = re.search(PATTERN_TELNET_50001, str(line))
             if search is not None:
-                res = search.groupdict()
-                #print(str(res))
-                if res['address'] in self.ogn_devicedb:
-                    res['registration'] = self.ogn_devicedb[res['address']]
-                else:
-                    res['registration'] = None
-                self.callback(res)
+                msg = search.groupdict()
+                addr = int(msg['address'], 16)
+                lat = float(msg['latitude'])
+                lon = float(msg['longitude'])
+                altFt = float(msg['altitude']) * 3.28084 # in ft
+                speedKt = float(msg['ground_speed']) * 1.94384 # m/s in kt
+                climb = int(float(msg['climb_rate']) * 196.85)
+                track = float(msg['track'])
+                anon = False
+                if msg['address'].lower()[0:2] == 'dd' or msg['address'].lower()[0:1] == '1':
+                    anon = True
+
+                registration = None
+
+                if msg['address'] in self.ogn_devicedb:
+                    registration = self.ogn_devicedb[msg['address']]
+
+                self.callback(addr, lat, lon, altFt, speedKt, climb, track, registration, anon)
         except:
             pass
 
     def aprsmessage(self, msg):
         strmsg = msg.decode('utf-8')
-        message = ogn.parser.parse(msg)
-        print(f'{message}')
+        if len(strmsg) == 0:
+            return
+        try:
+            message = aprslib.parse(strmsg)
+            # additional info seems to be in here...
+            comment = message['comment'].split(' ')
+            if comment[0].startswith('id'):
+                addrStr = comment[0][2:]
+            else:
+                addrStr = message['from'][3:]
+            addr = int(addrStr, 16)
+
+            climb = 0
+            if comment[1].endswith('fpm'):
+                climb = int(comment[1][0:-3])
+
+            lat = message['latitude']
+            lon = message['longitude']
+            altFt = message['altitude'] * 3.28084 # in ft
+            speedKt = message['ground_speed'] * 1.94384 if 'ground_speed' in message else 0
+            track = message['course'] if 'course' in message else 0
+
+            registration = None
+            if addrStr in self.ogn_devicedb:
+                registration = self.ogn_devicedb[addrStr]
+
+            self.callback(addr, lat, lon, altFt, speedKt, climb, track, registration, False)
+        except Exception as e:
+            logging.warn(f'not parsable as APRS message: {strmsg}')
+            print(e)
+
         

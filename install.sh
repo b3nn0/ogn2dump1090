@@ -20,8 +20,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     sudo python3 setup.py install
     cd ..
 
-    git clone https://github.com/glidernet/python-ogn-client
-    cd python-ogn-client
+    git clone https://github.com/rossengeorgiev/aprs-python
+    cd aprs-python
     sudo python3 setup.py build
     sudo python3 setup.py install
     cd .. 
