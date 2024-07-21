@@ -27,11 +27,6 @@ if __name__ == '__main__':
     os.chdir(d)
     logging.info('Switched to ' + d)
     logging.info('Starting up')
-    
-    # Start dummy APRS server
-    aprsservers = args.aprsservers.split(',')
-    aprs_proxy = aprsproxy.AprsProxy(ogn_reader.aprsmessage, forwardAddrs=aprsservers)
-    aprs_proxy.start()
 
     # dump1090 writer
     writer = dump1090writer.Dump1090Writer()
@@ -40,4 +35,11 @@ if __name__ == '__main__':
     # Start the OGN reader
     ogn_reader = ognreader.OgnReader(writer.send_msg)
     ogn_reader.start()
+    
+    # Start dummy APRS server
+    aprsservers = args.aprsservers.split(',')
+    aprs_proxy = aprsproxy.AprsProxy(ogn_reader.aprsmessage, forwardAddrs=aprsservers)
+    aprs_proxy.start()
+
+
     logging.info('Startup complete')
