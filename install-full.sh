@@ -51,6 +51,13 @@ sudo python3 setup.py build
 sudo python3 setup.py install
 cd ..
 
+# install python-ogn-client
+git clone https://github.com/glidernet/python-ogn-client
+cd python-ogn-client
+sudo python3 setup.py build
+sudo python3 setup.py install
+cd .. 
+
 # install dump1090-fa fork
 mkdir dump1090 && cd dump1090
 git clone https://github.com/VirusPilot/dump1090.git
