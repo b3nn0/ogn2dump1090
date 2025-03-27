@@ -62,6 +62,7 @@ read -p "Press return to continue"
 sudo nano /etc/default/dump1090-fa
 
 # install OGN
+cd ~/ogn2dump1090
 if [ "$ARCH" -eq 64 ] && [ "$DIST" -ge 12 ]; then
   wget http://download.glidernet.org/arm64/rtlsdr-ogn-bin-arm64-0.3.2.tgz
 else
@@ -93,6 +94,7 @@ echo "and give your receiver a Call and remove the Server=localhost.. line"
 echo "Then save the file (Crtl+O, Return) and quit nano (Ctrl+X)."
 read -t 1 -n 10000 discard
 read -p "Press return to continue"
+cd ..
 nano ogn_setup.conf
 
 # install service
