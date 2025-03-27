@@ -1,7 +1,7 @@
 #!/bin/bash
 #set -x
 echo "Simple installer script to work on a CLEAN RasPiOS Lite Image."
-echo "Tested on RaspberryPi 3b, 3b+ and 4b"
+echo "Tested on RaspberryPi 3b, 3b+, 4b and Pi5"
 read -p "Press return to continue"
 
 sudo apt update
@@ -10,16 +10,6 @@ sudo apt install debhelper -y
 
 ARCH=$(getconf LONG_BIT)
 DIST=$(lsb_release -r -s)
-
-# remove installed librtlsdr
-sudo apt purge ^librtlsdr
-sudo rm -rf /usr/lib/librtlsdr*
-sudo rm -rf /usr/include/rtl-sdr*
-sudo rm -rf /usr/local/lib/librtlsdr*
-sudo rm -rf /usr/local/lib/aarch64-linux-gnu/librtlsdr*
-sudo rm -rf /usr/local/include/rtl-sdr*
-sudo rm -rf /usr/local/include/rtl_*
-sudo rm -rf /usr/local/bin/rtl_*
 
 # compile and install latest librtlsdr from https://github.com/osmocom/rtl-sdr
 cd
@@ -90,8 +80,7 @@ rm -f *.tgz
 cd rtlsdr-ogn
 sudo chown root gsm_scan ogn-rf rtlsdr-ogn
 sudo chmod a+s gsm_scan ogn-rf rtlsdr-ogn
-sudo mknod gpu_dev c 100 0
-cd ..
+sudo mknod gpu_dev c 100 0  
 
 # download for automatic geoid sep
 wget http://download.glidernet.org/common/WW15MGH.DAC
