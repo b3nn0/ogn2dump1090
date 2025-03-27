@@ -43,6 +43,7 @@ sudo python3 setup.py install
 cd ..
 
 # install dump1090-fa fork
+mkdir dump1090 && cd dump1090
 git clone https://github.com/VirusPilot/dump1090.git
 cd dump1090
 dpkg-buildpackage -b --no-sign --build-profiles=custom,rtlsdr
@@ -51,6 +52,7 @@ sudo dpkg -i *.deb
 rm -f *.deb
 rm -f *.buildinfo
 rm -f *.changes
+cd ..
 
 # dump1090-fa configuration
 echo "I will now open the dump1090-fa configuration in nano."
@@ -62,7 +64,6 @@ read -p "Press return to continue"
 sudo nano /etc/default/dump1090-fa
 
 # install OGN
-cd ~/ogn2dump1090
 if [ "$ARCH" -eq 64 ] && [ "$DIST" -ge 12 ]; then
   wget http://download.glidernet.org/arm64/rtlsdr-ogn-bin-arm64-0.3.2.tgz
 else
