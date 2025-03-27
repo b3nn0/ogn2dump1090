@@ -12,11 +12,10 @@ ARCH=$(getconf LONG_BIT)
 DIST=$(lsb_release -r -s)
 
 # compile and install latest librtlsdr from https://github.com/osmocom/rtl-sdr
-cd
 git clone https://github.com/osmocom/rtl-sdr
 cd rtl-sdr
 sudo dpkg-buildpackage -b --no-sign
-cd
+cd ..
 sudo dpkg -i *.deb
 rm -f *.deb
 rm -f *.buildinfo
@@ -30,7 +29,6 @@ echo blacklist dvb_usb_v2 | sudo tee -a /etc/modprobe.d/rtl-sdr-blacklist.conf
 echo blacklist rtl8xxxu | sudo tee -a /etc/modprobe.d/rtl-sdr-blacklist.conf
 
 # install mlat-client
-echo "installing mlat-client"
 git clone https://github.com/wiedehopf/mlat-client.git
 cd mlat-client
 sudo python3 setup.py build
@@ -42,16 +40,17 @@ git clone https://github.com/rossengeorgiev/aprs-python
 cd aprs-python
 sudo python3 setup.py build
 sudo python3 setup.py install
-cd .. 
+cd ..
 
 # install dump1090-fa fork
-mkdir dump1090 && cd dump1090
 git clone https://github.com/VirusPilot/dump1090.git
 cd dump1090
 dpkg-buildpackage -b --no-sign --build-profiles=custom,rtlsdr
 cd ..
-sudo dpkg -i dump1090-fa_*.deb
-cd ..
+sudo dpkg -i *.deb
+rm -f *.deb
+rm -f *.buildinfo
+rm -f *.changes
 
 # dump1090-fa configuration
 echo "I will now open the dump1090-fa configuration in nano."
