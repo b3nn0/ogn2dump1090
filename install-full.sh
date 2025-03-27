@@ -29,6 +29,9 @@ echo blacklist dvb_usb_rtl28xxu | sudo tee -a /etc/modprobe.d/rtl-sdr-blacklist.
 echo blacklist dvb_usb_v2 | sudo tee -a /etc/modprobe.d/rtl-sdr-blacklist.conf
 echo blacklist rtl8xxxu | sudo tee -a /etc/modprobe.d/rtl-sdr-blacklist.conf
 
+# install https://pypi.org/project/ogn-client/
+sudo pip3 install ogn-client
+
 # install mlat-client
 git clone https://github.com/wiedehopf/mlat-client.git
 cd mlat-client
