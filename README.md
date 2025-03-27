@@ -15,6 +15,7 @@ During the setup process you will be automatically asked to edit `/home/pi/ogn2d
 ```
 sudo apt update
 sudo apt full-upgrade --yes
+sudo apt autoremove --yes
 sudo apt install --yes git
 git clone -b aprsproxy https://github.com/b3nn0/ogn2dump1090.git
 cd ogn2dump1090
