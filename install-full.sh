@@ -12,6 +12,7 @@ ARCH=$(getconf LONG_BIT)
 DIST=$(lsb_release -r -s)
 
 # compile and install latest librtlsdr from https://github.com/osmocom/rtl-sdr
+cd
 git clone https://github.com/osmocom/rtl-sdr
 cd rtl-sdr
 sudo dpkg-buildpackage -b --no-sign
@@ -20,7 +21,7 @@ sudo dpkg -i *.deb
 rm -f *.deb
 rm -f *.buildinfo
 rm -f *.changes
-
+cd ~/ogn2dump1090
 echo blacklist rtl2832 | sudo tee /etc/modprobe.d/rtl-sdr-blacklist.conf
 echo blacklist r820t | sudo tee -a /etc/modprobe.d/rtl-sdr-blacklist.conf
 echo blacklist rtl2830 | sudo tee -a /etc/modprobe.d/rtl-sdr-blacklist.conf
