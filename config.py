@@ -1,13 +1,8 @@
-# Requirements:
-# sudo pip3 install ogn-client
-# Also, install mlat-client:
-# git clone https://github.com/mutability/mlat-client.git && cd mlat-client && sudo python3 setup.py install
-
-ogn_rf_cmd = 'rtlsdr-ogn/ogn-rf'
-ogn_decode_cmd = 'rtlsdr-ogn/ogn-decode'
+# Host/POrt where readsb is running with something like --net-sbs-in-port=30008
+sbs_destination_host = "127.0.0.1"
+sbs_destination_port = 30008
 
 
-# Important: configure this file as needed. As APRS Server you can either use the official gliderNet servers
-# if you want to feed to OGN and the device has an internet connection. If you want to work offline,
-# use localhost:14580 as APRS server
-ogn_config = 'ogn_setup.conf'
+# Host/Port where ogn-decode telnet listens. Leave empty if yo only want APRS Proxy functionality
+TELNET_SERVER_HOST = "127.0.0.1"
+TELNET_SERVER_PORT = 50001 

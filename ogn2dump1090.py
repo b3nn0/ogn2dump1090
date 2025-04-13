@@ -4,7 +4,6 @@
 import aprsproxy
 import ognreader
 import dump1090writer
-import asyncore
 import os
 import argparse
 import logging

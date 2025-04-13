@@ -7,7 +7,8 @@
             "request": "launch",
             "program": "ogn2dump1090.py",
             "args": ["-a", "asdfasdfas.sdfhgufdshgjs.com"],
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "justMyCode": false
         },
         {
             "name": "Python: ogn2dump1090 remote",
@@ -18,7 +19,8 @@
             "pathMappings": [{
                 "localRoot": "${workspaceFolder}",
                 "remoteRoot": "/home/pi/ogn2dump1090"
-            }]
+            }],
+            "justMyCode": false
         },
         {
             "name": "Python: Current file",

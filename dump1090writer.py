@@ -2,42 +2,78 @@ import socket
 import time
 import sys
 import os
-import asyncore
 import threading
-import mlat.client.output
-#import output
 import math
+import config
+
 
 class Dump1090Writer:
     def __init__(self):
-        self.conn = None
         self.sock = None
     
     def connect(self):
         try:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.sock.connect(('127.0.0.1', 30004))
-            self.conn = mlat.client.output.BeastConnection(None, self.sock, socket.AF_INET, socket.SOCK_STREAM, ('127.0.0.1', 30004))
-            #self.conn = mlat.client.output.BasestationConnection(None, self.sock, socket.AF_INET, socket.SOCK_STREAM, ('127.0.0.1', 30004))
+            self.sock.connect((config.sbs_destination_host, config.sbs_destination_port))
         except:
+            self.sock = None
             print('Cannot connect to dump1090 (yet?)')
         
-        #self.conn.connect_now()
-        #self.conn.connected = True
+
 
     
-    def send_msg(self, address, lat, lon, altFt, speedKt, climbRateFtMin=0, track=0, registration=None, anon=False):
-        if self.conn is None or not self.conn.connected:
+    def send_msg(self, address, lat, lon, altFt, speedKt, climbRateFtMin=0, track=0, registration='', anon=False, addrtype=0):
+        if self.sock is None:
             self.connect()
+        if self.sock is None:
+            return
 
-        # Format as beast message
-        track = math.radians(track)
-        ns = speedKt * math.cos(track)
-        ew = speedKt * math.sin(track)
+        now = time.time()
+        rcvts = now # todo
 
-        self.conn.send_position(None, address, lat, lon, altFt,
-            ns, ew, climbRateFtMin, registration, None, None, None, anon, False)
-        asyncore.loop(count=1)
+        if anon or addrtype != 1:
+            addrtype = '~'
+        else:
+            addrtype = ''
+
+        rcv_date = self.format_date(rcvts)
+        rcv_time = self.format_time(rcvts)
+        now_date = self.format_date(now)
+        now_time = self.format_time(now)
+        squawk = ""
+        fs = ""
+        emerg = ""
+        ident = ""
+        aog = ""
+        # readsb doesn't like - in registration (D-XXX -> DXXX)
+        registration = self.csv_quote(self.sanitize(registration))
+
+        msg = f"MSG,3,1,1,{addrtype}{address:06X},1,{rcv_date},{rcv_time},{now_date},{now_time},{registration},{int(altFt)},{int(speedKt)},{int(track)},{lat},{lon},{int(climbRateFtMin)},{squawk},{fs},{emerg},{ident},{aog}\n"
+        try:
+            #print(msg)
+            self.sock.send(msg.encode("utf-8"))
+        except Exception as e:
+            print('Failed to send SBS message: ' + str(e))
+            self.sock = None
+
+
+    def format_time(self, timestamp):
+        return time.strftime("%H:%M:%S", time.gmtime(timestamp)) + ".{0:03.0f}".format(math.modf(timestamp)[0] * 1000)
+
+
+    def format_date(self, timestamp):
+        return time.strftime("%Y/%m/%d", time.gmtime(timestamp))
+
+    def csv_quote(self, s):
+        if s is None:
+            return ''
+        if s.find('\n') == -1 and s.find('"') == -1 and s.find(',') == -1:
+            return s
+        else:
+            return '"' + s.replace('"', '""') + '"'
+    
+    def sanitize(self, s):
+        return ''.join(c for c in s if c.isalnum())
 
 if __name__ == '__main__':
     import ognreader

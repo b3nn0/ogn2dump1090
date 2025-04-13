@@ -1,3 +1,7 @@
+
+# WARNING
+Documentation/this README is terribly outdated. Only use if you know what you are doing
+
 # ogn2dump1090
 Simple tool to inject Open Glider Network Traffic into a `dump1090-fa` instance for display on a unified map (will be displayed as "MLAT" traffic). It contains setup scripts to install everything that's needed (including a modified dump1090-fa instance) on a Pi3B or Pi4B with a fresh RasPiOS (idealy 64bit Bookworm) installed. It requires basic RasPiOS knowledge (i.e. connecting via SSH and basic Linux shell stuff)
 
