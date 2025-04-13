@@ -92,7 +92,7 @@ class OgnReader(threading.Thread):
                 registration = ''
                 if msg['address'] in self.ogn_devicedb:
                     registration = self.ogn_devicedb[msg['address']]
-                logging.info("TELNET " + addrStr)
+                #logging.info("TELNET " + addrStr)
                 self.callback(addr, lat, lon, altFt, speedKt, climb, track, registration, anon, addrtype)
         except Exception as e:
             pass
@@ -132,7 +132,7 @@ class OgnReader(threading.Thread):
                 addrtype = msg.get('address_type', '0')
                 addrtype = 0 if addrtype is None else int(addrtype)
 
-                logging.info("APRS " + addrStr)
+                #logging.info("APRS " + addrStr)
                 self.callback(addr, lat, lon, altFt, speedKt, climb, track, registration, anon, addrtype)
             except Exception as e:
                 logging.warn(f'not parsable as APRS message: ' + str(e))
