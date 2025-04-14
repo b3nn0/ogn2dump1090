@@ -83,6 +83,7 @@ if __name__ == '__main__':
 
     r = ognreader.OgnReader(w.send_msg)
     while True:
+        r.aprsmessage(b"ICA4BAA85>OGADSB:/104518h5014.85N/00925.61E^297/417/A=035793 !W48! id254BAA85 -64fpm FL359.75 A3:THY7DH Sq3203")
         r.aprsmessage(b"ICA3D24FE>OGFLR,qAS:/085537h4812.03N/00748.45E'209/087/A=003754 !W04! id053D24FE +099fpm +0.0rot 0.0dB 1e +4.0kHz gps1x2")
         r.aprsmessage(b"PAW404BF0>OGPAW,qAS:/085536h4913.52N\\01244.77E^117/082/A=004049 !W60! id21404BF0 15.5dB +10.0kHz")
         r.aprsmessage(b"FNT11189E>OGNFNT,qAS:/085536h4731.16N\\01226.94En !W36! id3E11189E FNT71 sF1 cr4 5.4dB -19.4kHz 4e")

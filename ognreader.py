@@ -104,7 +104,7 @@ class OgnReader(threading.Thread):
         for strmsg in strmsgs.splitlines():
             try:
                 # python ogn lib doesn't like that there is no receiver string in our local messages.. fake one in
-                if strmsg.split(':')[0].count(',') == 1:
+                while strmsg.split(':')[0].count(',') <= 1:
                     strmsg = strmsg.replace(':', ',XXX:', 1)
 
 
