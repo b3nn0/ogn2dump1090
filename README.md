@@ -19,17 +19,26 @@ cd python-ogn-client/
 pip3 install . --break-system-packages
 ```
 
-### enable local OGN APRS proxy
+### enable local OGN APRS proxy (optional)
+you need to add the following line to the OGN APRS configuration section:
 ```
-cd ~/
-cd rtlsdr-ogn/
-nano Template.conf (add APRS_Server="localhost:14580")
+APRS:
+{
+  Server = "localhost:14580";
+};
+```
+followed by a
+```
 sudo service rtlsdr-ogn restart
 ```
 
 ### modify readsb config
+you need to add `--net-sbs-in-port=30008` to the `NET_OPTIONS` of your readsb configuration:
 ```
-sudo nano /etc/default/readsb (add to NET_OPTIONS: --net-sbs-in-port=30008)
+sudo nano /etc/default/readsb
+```
+followed by a
+```
 sudo service readsb restart
 ```
 
