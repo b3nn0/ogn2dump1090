@@ -53,8 +53,8 @@ https://yourRaspberryPi.local/tar1090/
 
 ### OGN ddb update
 the OGN database is not automatically updated, therefore a regular manual update is recommended:
-wget -O ddb.json http://ddb.glidernet.org/download/?j=1
 ```
+wget -O ddb.json http://ddb.glidernet.org/download/?j=1
 sudo systemctl restart ogn2dump1090
 ```
 
