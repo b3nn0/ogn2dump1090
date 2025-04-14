@@ -16,10 +16,10 @@ sudo apt install python3-pip git telnet -y
 cd ~/
 git clone https://github.com/glidernet/python-ogn-client
 cd python-ogn-client/
-pip3 install . --break-system-packages
+pip3 install --break-system-packages .
 ```
 
-### enable local OGN APRS proxy (optional)
+### enable local OGN APRS proxy (optional, **currently not working**)
 you need to add the following line to the OGN APRS configuration section:
 ```
 APRS:
@@ -69,6 +69,6 @@ sudo systemctl restart ogn2dump1090
 
 ### implementation details
 ogn2dump1090 is parsing one or both of the following two datastreams:
-- APRS (through the enabled local OGN APRS proxy, see above)
+- APRS (through the enabled local OGN APRS proxy, see above, **currently not working**)
 - direct output from ogn-decode port 50001
 and forwarding it to the readsb sbs input port (e.g. 30008)
