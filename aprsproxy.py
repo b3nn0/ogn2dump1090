@@ -1,120 +1,118 @@
-import threading
-import socket
-import select
-import time
 import datetime
 import random
+import asyncio
 import logging
+from typing import Awaitable, Callable, List
 
 
 defaultAprsServers = ['glidern1.glidernet.org','glidern2.glidernet.org','glidern3.glidernet.org','glidern4.glidernet.org','glidern5.glidernet.org']
 
-class ClientHandler(threading.Thread):
-    def __init__(self, conn, addr, forwardAddrs, msgcallback):
-        threading.Thread.__init__(self)
-        self.conn = conn
-        self.addr = addr
-        self.forwardAddrs = forwardAddrs
-        self.msgcallback = msgcallback
-        
+class ClientHandler():
+    clientReader : asyncio.StreamReader | None = None
+    clientWriter : asyncio.StreamWriter | None = None
+    upstreamReader : asyncio.StreamReader | None = None
+    upstreamWriter : asyncio.StreamWriter | None = None
 
-    def tryAprsConnect(self):
+    forwardAddrs : List[str]
+    msgCallback : Callable[[bytes], Awaitable[None]]
+
+
+
+
+    def __init__(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter, forwardAddrs: List[str], msgCallback: Callable[[bytes], Awaitable[None]]):
+        self.clientReader = reader
+        self.clientWriter = writer
+        self.forwardAddrs = forwardAddrs
+        self.msgCallback = msgCallback
+
+
+    def start(self):
+        asyncio.create_task(self.upstreamConnector())
+        asyncio.create_task(self.heartbeatSender())
+        asyncio.create_task(self.readClient())
+
+    def is_client_connected(self):
+        return self.clientReader is not None and self.clientWriter is not None and not self.clientReader.at_eof() and not self.clientWriter.is_closing()
+    
+    def is_upstream_connected(self):
+        return self.upstreamReader is not None and self.upstreamWriter is not None and not self.upstreamReader.at_eof() and not self.upstreamWriter.is_closing()
+
+    async def heartbeatSender(self):
+        await asyncio.sleep(20)
+        while self.is_client_connected():
+            if not self.is_upstream_connected():
+                # Standalone - send heartbeat
+                heartbeat = '# ogn2dump1090 1.0 %s OGN2DUMP1090 127.0.0.1:14580\r\n' % datetime.datetime.now(datetime.timezone.utc).isoformat()
+                assert self.clientWriter is not None
+                self.clientWriter.write(heartbeat.encode("utf-8"))
+            await asyncio.sleep(20)
+
+    async def upstreamConnector(self):
         if self.forwardAddrs is None or len(self.forwardAddrs) == 0:
-            return None
+            logging.info("No upstream APRS Server configured. Using standalone mode")
 
-        host = random.choice(self.forwardAddrs)
-        port = 14580
-        if ':' in host:
-            hp = host.split(':')
-            host = hp[0]
-            port = int(hp[1])
-        
-        try:
-            sock = socket.socket()
-            sock.connect((host, port))
-            sock.setblocking(False)
-            return sock
-        except Exception as e:
-            logging.error(f'Failed to connect to upstream APRS server {host}: {e}')
-        return None
+        while self.is_client_connected():
+            try:
+                host = random.choice(self.forwardAddrs)
+                port = 14580
+                if ':' in host:
+                    hp = host.split(':')
+                    host = hp[0]
+                    port = int(hp[1])
 
-
-    def run(self):
-        next_heartbeat = time.time() + 1
-
-        clientSocket = self.tryAprsConnect()
-        try:
-            while clientSocket is None:
-                # Standalone mode without forward connection because not configured or no internet
-                self.conn.settimeout(next_heartbeat - time.time())
-                try:
-                    # Receive everything and ignore
-                    data = self.conn.recv(1024)
-                    self.msgcallback(data)
-                    #print('Got APRS: ' + str(data))
-                except socket.timeout:
-                    pass
-                if time.time() >= next_heartbeat:
-                    #print('Send heartbeat...')
-                    heartbeat = '# ogn2dump1090 1.0 %s OGN2DUMP1090 127.0.0.1:14580\r\n' % datetime.datetime.utcnow().isoformat()
-                    self.conn.send(heartbeat.encode('utf-8'))
-                    next_heartbeat = time.time() + 20
-                    clientSocket = self.tryAprsConnect()
-                    # %s %s %s %s %s\r\n"
-
-            while clientSocket is not None:
-                # Proxying mode with upstream APRS connection
-                self.conn.setblocking(False)
-                sockets = [clientSocket, self.conn]
-                read_sockets, write_sockets, error_sockets = select.select(sockets, [], sockets)
-                
-                for s in error_sockets:
-                    if s is clientSocket:
-                        clientSocket.close()
-                        clientSocket = None # Fall back to proxy mode
-                        logging.error('Upstream APRS connection closed. Falling back to standalone mode')
+                self.upstreamReader, self.upstreamWriter = await asyncio.open_connection(host, port)
+                logging.info(f"Connected to upstream APRS Server {host}:{port}")
+                while self.is_client_connected() and not self.upstreamReader.at_eof():
+                    line = await self.upstreamReader.readline()
+                    if line is None or not self.is_client_connected():
                         break
-                    elif s is self.conn:
-                        raise Exception("downstream connection closed")
+                    assert self.clientWriter is not None
+                    self.clientWriter.write(line)
 
-                if clientSocket is None: # break outer to get back to standalone mode
-                    break
+                logging.info(f"Upstream APRS Connection closed")
+            except Exception as e:
+                logging.warning(f"Upstream APRS connection error: {e}. Retrying in 10..")
+            await asyncio.sleep(10)
 
-                for s in read_sockets:
-                    if s is clientSocket:
-                        data = clientSocket.recv(1024)
-                        self.conn.send(data)
-                    elif s is self.conn:
-                        data = self.conn.recv(1024)
-                        self.msgcallback(data)
-                        try:
-                            clientSocket.send(data)
-                        except Exception as e:
-                            logging.error('Upstream APRS connection error {e}. Falling back to standalone mode')
-                            clientSocket.close()
-                            clientSocket = None
-                            break
+    async def readClient(self):
+        while self.is_client_connected():
+            assert self.clientReader is not None
+            line = await self.clientReader.readline()
+            if line is None or not self.is_client_connected():
+                break
+            await self.msgCallback(line)
 
-
-        finally:
-            self.conn.close()
-            if clientSocket is not None:
-                clientSocket.close()
-
+            if self.is_upstream_connected():
+                assert self.upstreamWriter is not None
+                self.upstreamWriter.write(line)
+        
+        # Client no longer connected. Close upstream
+        if self.is_upstream_connected():
+            logging.info("APRS client connection lost. Disconnecting upstream")
+            assert self.upstreamWriter is not None
+            self.upstreamWriter.close()
     
 
-class AprsProxy(threading.Thread):
-    def __init__(self, msgcallback, forwardAddrs=defaultAprsServers):
-        threading.Thread.__init__(self)
+
+
+class AprsProxy():
+    forwardAddrs : List[str]
+    msgCallback : Callable[[bytes], Awaitable[None]]
+
+    def __init__(self, msgcallback : Callable[[bytes], Awaitable[None]], forwardAddrs : List[str]=defaultAprsServers):
         self.forwardAddrs = forwardAddrs
         self.msgcallback = msgcallback
     
-    def run(self):
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        sock.bind(('127.0.0.1', 14580))
-        while True:
-            sock.listen()
-            conn, addr = sock.accept()
-            ClientHandler(conn, addr, self.forwardAddrs, self.msgcallback).start()
+    async def start(self):
+        await self.start_server()
 
+    async def start_server(self):
+        server = await asyncio.start_server(self.handle_client, "0.0.0.0", 14580)
+        await server.serve_forever()
+
+    
+    async def handle_client(self, reader, writer):
+        logging.info("APRS client connected")
+        clientHandler = ClientHandler(reader, writer, self.forwardAddrs, self.msgcallback)
+        clientHandler.start()
+        

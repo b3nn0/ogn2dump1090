@@ -6,7 +6,7 @@
             "type": "python",
             "request": "launch",
             "program": "ogn2dump1090.py",
-            "args": ["-a", "asdfasdfas.sdfhgufdshgjs.com"],
+            "args": ["-a", "localhost:14581"],
             "console": "integratedTerminal",
             "justMyCode": false
         },

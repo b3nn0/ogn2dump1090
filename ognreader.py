@@ -1,4 +1,5 @@
 import threading
+from typing import Awaitable, Callable
 import config
 import subprocess
 import re
@@ -8,6 +9,7 @@ import json
 import logging
 import time
 import ogn.parser
+import asyncio
 
 
 # Shamelessly taken from https://github.com/glidernet/python-ogn-client/blob/master/ogn/parser/pattern.py
@@ -24,19 +26,40 @@ PATTERN_TELNET_50001 = re.compile(r"""
     .*
 """, re.VERBOSE | re.MULTILINE)
 
-class OgnReader(threading.Thread):
+class OgnReader():
+    callback : Callable[[int, float, float, float, float, float, float, str, bool, int], Awaitable[None]]
+    ogn_devicedb : dict[str, str]
+
     def __init__(self, callback):
-        threading.Thread.__init__(self)
-        self.sock = None
         self.callback = callback
         self.ogn_devicedb = {}
         self.read_ognddb()
+
+    async def start(self):
+        if config.TELNET_SERVER_HOST is None or config.TELNET_SERVER_HOST == "":
+            logging.info("Ogn telnet reader disabled")
+            return
+
+        await self.ognreader()
     
-    def __del__(self):
-        if self.proc_rf is not None:
-            self.proc_rf.kill()
-        if self.proc_decode is not None:
-            self.proc_decode.kill()
+    async def ognreader(self):
+        while True:
+            try:
+                reader, writer = await asyncio.open_connection(config.TELNET_SERVER_HOST, config.TELNET_SERVER_PORT)
+                logging.info('OGN telnet connection established')
+                while True:
+                    line = await reader.readline()
+                    if not line:
+                        raise Exception("EOF")
+                    
+                    await self.parse_line(line.strip())
+
+
+            except Exception as e:
+                logging.info('Telnet connection closed. Retrying in 5... Error: ' + str(e))
+                await asyncio.sleep(5)
+
+    
     
     def read_ognddb(self):
         try:
@@ -48,28 +71,8 @@ class OgnReader(threading.Thread):
         except:
             logging.warn('Failed to read device db')
     
-    def run(self):
-        if config.TELNET_SERVER_HOST is None or config.TELNET_SERVER_HOST == "":
-            logging.info("Ogn telnet reader disabled")
-            return
-        logging.info('OgnReader startup')
-        while True:
-            try:
-                self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                self.sock.connect((config.TELNET_SERVER_HOST, config.TELNET_SERVER_PORT))
-                logging.info('OGN telnet connection established')
-                for line in self.sock.makefile(mode='rw', encoding='iso-8859-1'):
-                    self.parse_line(line.strip())
 
-
-
-            except Exception as e:
-                logging.info('Telnet connection closed. Retrying in 5... Error: ' + str(e))
-                time.sleep(5)
-
-
-
-    def parse_line(self, line):
+    async def parse_line(self, line):
         try:
             search = re.search(PATTERN_TELNET_50001, str(line))
             if search is not None:
@@ -93,16 +96,18 @@ class OgnReader(threading.Thread):
                 if msg['address'] in self.ogn_devicedb:
                     registration = self.ogn_devicedb[msg['address']]
                 #logging.info("TELNET " + addrStr)
-                self.callback(addr, lat, lon, altFt, speedKt, climb, track, registration, anon, addrtype)
+                await self.callback(addr, lat, lon, altFt, speedKt, climb, track, registration, anon, addrtype)
         except Exception as e:
             pass
 
-    def aprsmessage(self, msg):
+    async def aprsmessage(self, msg):
         strmsgs = msg.decode('utf-8')
         if len(strmsgs) == 0:
             return
         for strmsg in strmsgs.splitlines():
             try:
+                if ":" not in strmsg:
+                    continue # ???
                 # python ogn lib doesn't like that there is no receiver string in our local messages.. fake one in
                 while strmsg.split(':')[0].count(',') <= 1:
                     strmsg = strmsg.replace(':', ',XXX:', 1)
@@ -118,8 +123,8 @@ class OgnReader(threading.Thread):
                 track = msg['track']
                 altFt = msg['altitude'] * 3.28084 # in ft
 
-                speedKt = msg.get('ground_speed') if msg.get('ground_speed') is not None else 0
-                climb = msg.get('climb_rate') * 3.28084 if msg.get('climb_rate') is not None else 0
+                speedKt = msg.get('ground_speed', 0) if msg.get('ground_speed') is not None else 0
+                climb = msg.get('climb_rate', 0) * 3.28084 if msg.get('climb_rate') is not None else 0
 
                 anon = False
                 if addrStr.lower()[0:2] == 'dd' or addrStr.lower()[0:1] == '1':
@@ -133,7 +138,7 @@ class OgnReader(threading.Thread):
                 addrtype = 0 if addrtype is None else int(addrtype)
 
                 #logging.info("APRS " + addrStr)
-                self.callback(addr, lat, lon, altFt, speedKt, climb, track, registration, anon, addrtype)
+                await self.callback(addr, lat, lon, altFt, speedKt, climb, track, registration, anon, addrtype)
             except Exception as e:
                 logging.warn(f'not parsable as APRS message: ' + str(e))
 
