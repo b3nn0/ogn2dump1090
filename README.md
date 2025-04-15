@@ -1,4 +1,4 @@
-# ogn2dump1090
+# ogn2readsb (aka. ogn2dump1090)
 simple Python tool to inject Open Glider Network Traffic (from an existing local OGN decoder instance) into an existing readsb ADSB decoder instance for display on a unified tar1090 map. OGN traffic will be displayed as **other** traffic in combination with ADSB traffic, using the **readsb tar1090 webinterface** (e.g. https://yourRaspberryPi.local/tar1090/)
 
 ### prerequisites
