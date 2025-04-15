@@ -140,6 +140,6 @@ class OgnReader():
                 #logging.info("APRS " + addrStr)
                 await self.callback(addr, lat, lon, altFt, speedKt, climb, track, registration, anon, addrtype)
             except Exception as e:
-                logging.warn(f'not parsable as APRS message: ' + str(e))
+                logging.warning(f'not parsable as APRS message {msg}: {str(e)}')
 
         
