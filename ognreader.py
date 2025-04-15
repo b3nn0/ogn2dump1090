@@ -27,7 +27,7 @@ PATTERN_TELNET_50001 = re.compile(r"""
 """, re.VERBOSE | re.MULTILINE)
 
 class OgnReader():
-    callback : Callable[[int, float, float, float, float, float, float, str, bool, int], Awaitable[None]]
+    callback : Callable[[int, float, float, float|None, float|None, float|None, float|None, str, bool, int], Awaitable[None]]
     ogn_devicedb : dict[str, str]
 
     def __init__(self, callback):
@@ -114,7 +114,7 @@ class OgnReader():
 
 
                 msg = ogn.parser.parse(strmsg)
-                if msg['aprs_type'] != 'position' or msg.get('altitude') is None:
+                if msg['aprs_type'] != 'position':
                     continue
 
                 # ADSB Messages don't seem to have addr_type and addr set. Need to guess ID from "name" 'ICA342351'
@@ -133,11 +133,13 @@ class OgnReader():
                 addr = int(addrStr, 16)
                 lat = msg['latitude']
                 lon = msg['longitude']
-                track = msg['track']
-                altFt = msg['altitude'] * 3.28084 # in ft
+                track = msg.get('track', None)
+                altFt = msg.get('altitude')
+                if altFt is not None: altFt *= 3.28084 # in ft
 
-                speedKt = msg.get('ground_speed', 0) if msg.get('ground_speed') is not None else 0
-                climb = msg.get('climb_rate', 0) * 3.28084 if msg.get('climb_rate') is not None else 0
+                speedKt = msg.get('ground_speed')
+                climb = msg.get('climb_rate')
+                if climb is not None: climb *= 3.28084
 
                 anon = False
                 if addrStr.lower()[0:2] == 'dd' or addrStr.lower()[0:1] == '1':
