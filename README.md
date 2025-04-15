@@ -1,4 +1,4 @@
-# ogn2dump1090 - aprsproxy branch
+# ogn2dump1090
 simple Python tool to inject Open Glider Network Traffic (from an existing local OGN decoder instance) into an existing readsb ADSB decoder instance for display on a unified tar1090 map. OGN traffic will be displayed as **other** traffic in combination with ADSB traffic, using the **readsb tar1090 webinterface** (e.g. https://yourRaspberryPi.local/tar1090/)
 
 ### prerequisites
@@ -19,7 +19,7 @@ cd python-ogn-client/
 pip3 install --break-system-packages .
 ```
 
-### enable local OGN APRS proxy (optional, **currently not working**)
+### enable local OGN APRS proxy (optional)
 you need to add the following line to the OGN APRS configuration section:
 ```
 APRS:
@@ -46,7 +46,6 @@ sudo service readsb restart
 ```
 git clone https://github.com/b3nn0/ogn2dump1090
 cd ogn2dump1090/
-git switch aprsproxy
 wget -O ddb.json http://ddb.glidernet.org/download/?j=1
 OGN2DUMP1090DIR=$(pwd) envsubst < ogn2dump1090.service.template > ogn2dump1090.service
 sudo mv ogn2dump1090.service /etc/systemd/system/
@@ -69,6 +68,6 @@ sudo systemctl restart ogn2dump1090
 
 ### implementation details
 ogn2dump1090 is parsing one or both of the following two datastreams:
-- APRS (through the enabled local OGN APRS proxy, see above, **currently not working**)
+- APRS (through the enabled local OGN APRS proxy, see above)
 - direct output from ogn-decode port 50001
 and forwarding it to the readsb sbs input port (e.g. 30008)
