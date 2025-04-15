@@ -115,8 +115,21 @@ class OgnReader():
 
                 msg = ogn.parser.parse(strmsg)
                 if msg['aprs_type'] != 'position' or msg.get('altitude') is None:
-                    return
-                addrStr = msg['address'] if 'address' in msg else msg['name'][3:]
+                    continue
+
+                # ADSB Messages don't seem to have addr_type and addr set. Need to guess ID from "name" 'ICA342351'
+                addrStr = msg.get('address')
+                addrtypeStr = msg.get('address_type', '0')
+                addrtype = 0 if addrtypeStr is None else int(addrtypeStr)
+
+                if addrStr is None and "name" in msg:
+                    name = msg["name"]
+                    addrStr = name[3:]
+                    if name.startswith("ICA"):
+                        addrtype = 1
+                if addrStr is None or addrStr == "":
+                    continue
+
                 addr = int(addrStr, 16)
                 lat = msg['latitude']
                 lon = msg['longitude']
@@ -134,12 +147,11 @@ class OgnReader():
                 if addrStr in self.ogn_devicedb:
                     registration = self.ogn_devicedb[addrStr]
 
-                addrtype = msg.get('address_type', '0')
-                addrtype = 0 if addrtype is None else int(addrtype)
+
 
                 #logging.info("APRS " + addrStr)
                 await self.callback(addr, lat, lon, altFt, speedKt, climb, track, registration, anon, addrtype)
             except Exception as e:
-                logging.warning(f'not parsable as APRS message {msg}: {str(e)}')
+                logging.warning(f'not parsable as APRS message {strmsgs}: {str(e)}')
 
         

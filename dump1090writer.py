@@ -36,7 +36,7 @@ class Dump1090Writer:
         now = time.time()
         rcvts = now # todo
 
-        addrTypeypeStr = '~' if anon or addrtype != 1 else ''
+        addrTypeStr = '~' if anon or addrtype != 1 else ''
 
         rcv_date = self.format_date(rcvts)
         rcv_time = self.format_time(rcvts)
@@ -50,7 +50,7 @@ class Dump1090Writer:
         # readsb doesn't like - in registration (D-XXX -> DXXX)
         registration = self.csv_quote(self.sanitize(registration))
 
-        msg = f"MSG,3,1,1,{addrTypeypeStr}{address:06X},1,{rcv_date},{rcv_time},{now_date},{now_time},{registration},{int(altFt)},{int(speedKt)},{int(track)},{lat},{lon},{int(climbRateFtMin)},{squawk},{fs},{emerg},{ident},{aog}\n"
+        msg = f"MSG,3,1,1,{addrTypeStr}{address:06X},1,{rcv_date},{rcv_time},{now_date},{now_time},{registration},{int(altFt)},{int(speedKt)},{int(track)},{lat},{lon},{int(climbRateFtMin)},{squawk},{fs},{emerg},{ident},{aog}\n"
         while self.msgqueue.qsize() > 10: # Don't queue data that's too old
             await self.msgqueue.get()
         await self.msgqueue.put(msg.encode("utf-8"))
