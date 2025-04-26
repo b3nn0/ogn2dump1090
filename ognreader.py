@@ -27,7 +27,7 @@ PATTERN_TELNET_50001 = re.compile(r"""
 """, re.VERBOSE | re.MULTILINE)
 
 class OgnReader():
-    callback : Callable[[int, float, float, float|None, float|None, float|None, float|None, str, bool, int], Awaitable[None]]
+    callback : Callable[[dict], Awaitable[None]]
     ogn_devicedb : dict[str, str]
 
     def __init__(self, callback):
@@ -96,7 +96,19 @@ class OgnReader():
                 if msg['address'] in self.ogn_devicedb:
                     registration = self.ogn_devicedb[msg['address']]
                 #logging.info("TELNET " + addrStr)
-                await self.callback(addr, lat, lon, altFt, speedKt, climb, track, registration, anon, addrtype)
+                data = {
+                    "address": addr,
+                    "lat": lat,
+                    "lon": lon,
+                    "altFt": altFt,
+                    "speedKt": speedKt,
+                    "climbRateFtMin": climb,
+                    "track": track,
+                    "registration": registration,
+                    "anon": anon,
+                    "addrtype": addrtype
+                }
+                await self.callback(data)
         except Exception as e:
             pass
 
@@ -149,11 +161,23 @@ class OgnReader():
                 if addrStr in self.ogn_devicedb:
                     registration = self.ogn_devicedb[addrStr]
 
-
+                data = {
+                    "address": addr,
+                    "lat": lat,
+                    "lon": lon,
+                    "altFt": altFt,
+                    "speedKt": speedKt,
+                    "climbRateFtMin": climb,
+                    "track": track,
+                    "registration": registration,
+                    "anon": anon,
+                    "addrtype": addrtype
+                }
 
                 #logging.info("APRS " + addrStr)
-                await self.callback(addr, lat, lon, altFt, speedKt, climb, track, registration, anon, addrtype)
+                await self.callback(data)
             except Exception as e:
-                logging.warning(f'not parsable as APRS message {strmsgs}: {str(e)}')
+                pass
+                #logging.warning(f'not parsable as APRS message {strmsgs}: {str(e)}')
 
         

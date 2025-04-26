@@ -31,12 +31,11 @@ class Dump1090Writer:
             await asyncio.sleep(5)
 
     
-    async def send_msg(self, address : int, lat : float, lon : float, altFt : float|None, speedKt : float|None,
-            climbRateFtMin : float|None = None, track : float|None = None, registration : str ='', anon : bool = False, addrtype : int = 0):
+    async def send_msg(self, msg):
         now = time.time()
         rcvts = now # todo
 
-        addrTypeStr = '~' if anon or addrtype != 1 else ''
+        addrTypeStr = '~' if msg.get("anon") or msg.get("addrtype") != 1 else ''
 
         rcv_date = self.format_date(rcvts)
         rcv_time = self.format_time(rcvts)
@@ -48,17 +47,20 @@ class Dump1090Writer:
         ident = ""
         aog = ""
         # readsb doesn't like - in registration (D-XXX -> DXXX)
-        registration = self.csv_quote(self.sanitize(registration))
+        registration = self.csv_quote(self.sanitize(msg.get("registration")))
 
-        altFtStr = int(altFt) if altFt is not None else ''
-        speedKtStr = int(speedKt) if speedKt is not None else ''
-        trackStr = int(track) if track is not None else ''
-        altclimbRateFtMinStr = int(climbRateFtMin) if climbRateFtMin is not None else ''
+        altFtStr = int(msg.get("altFt")) if msg.get("altFt") is not None else ''
+        speedKtStr = int(msg.get("speedKt")) if msg.get("speedKt") is not None else ''
+        trackStr = int(msg.get("track")) if msg.get("track") is not None else ''
+        altclimbRateFtMinStr = int(msg.get("climbRateFtMin")) if msg.get("climbRateFtMin") is not None else ''
+        address = msg.get("address")
+        lat = msg.get("lat")
+        lon = msg.get("lon")
 
-        msg = f"MSG,3,1,1,{addrTypeStr}{address:06X},1,{rcv_date},{rcv_time},{now_date},{now_time},{registration},{altFtStr},{speedKtStr},{trackStr},{lat},{lon},{altclimbRateFtMinStr},{squawk},{fs},{emerg},{ident},{aog}\n"
+        formatted = f"MSG,3,1,1,{addrTypeStr}{address:06X},1,{rcv_date},{rcv_time},{now_date},{now_time},{registration},{altFtStr},{speedKtStr},{trackStr},{lat},{lon},{altclimbRateFtMinStr},{squawk},{fs},{emerg},{ident},{aog}\n"
         while self.msgqueue.qsize() > 10: # Don't queue data that's too old
             await self.msgqueue.get()
-        await self.msgqueue.put(msg.encode("utf-8"))
+        await self.msgqueue.put(formatted.encode("utf-8"))
         
 
 

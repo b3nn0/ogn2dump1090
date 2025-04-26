@@ -9,43 +9,36 @@ import argparse
 import logging
 import asyncio
 import sys
+import config
 
 logging.basicConfig(level=logging.DEBUG, stream=sys.stdout, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
-async def main():
-    #import ptvsd; ptvsd.enable_attach(address=('0.0.0.0', 3000)); ptvsd.wait_for_attach()
-    parser = argparse.ArgumentParser(prog='ogn2dump1090')
-    parser.add_argument('-a', '--aprs-servers',
-        help='List of upstream APRS servers. Defaults to glidern1-5.glidernet.org. Use -a \'\' to not connect to upstream APRS',
-        default='glidern1.glidernet.org,glidern2.glidernet.org,glidern3.glidernet.org,glidern4.glidernet.org,glidern5.glidernet.org',
-        dest='aprsservers',
-        type=str)
-    args = parser.parse_args()
+
+class ogn2dump1090:
+    def __init__(self):
+        self.sbswriter = dump1090writer.Dump1090Writer()
+        self.ognreader = ognreader.OgnReader(self.onParsedMsg)
+        self.aprsserver = aprsproxy.AprsServer().onMessage(self.onAprsFromOgnDecode)
+        self.aprsclient = aprsproxy.AprsClient(config.aprs_servers, config.aprs_message).onMessage(self.onAprsFromUpstream)
+
+    async def start(self):
+        await asyncio.gather(self.sbswriter.start(), self.ognreader.start(), self.aprsserver.start(), self.aprsclient.start())
 
     
-    d = os.path.abspath(os.path.dirname(__file__))
-    os.chdir(d)
-    logging.info('Switched to ' + d)
-    logging.info('Starting up')
-
-    # dump1090 writer
-    w = dump1090writer.Dump1090Writer()
-    writer = w.start()
-
-    # Start the OGN reader
-    r = ognreader.OgnReader(w.send_msg)
-    ogn_reader = r.start()
+    async def onParsedMsg(self, msgDict : dict):
+        await self.sbswriter.send_msg(msgDict)
+        
     
-    # Start dummy APRS server
-    aprsservers = args.aprsservers.split(',')
-    a = aprsproxy.AprsProxy(r.aprsmessage, forwardAddrs=aprsservers)
-    aprs_proxy = a.start()
-
-    await asyncio.gather(writer, ogn_reader, aprs_proxy)
+    async def onAprsFromOgnDecode(self, msg : bytes):
+        await self.ognreader.aprsmessage(msg)
+        await self.aprsclient.sendMessage(msg)
 
 
-    logging.info('Startup complete')
+    async def onAprsFromUpstream(self, msg : bytes):
+        await self.ognreader.aprsmessage(msg)
+
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    m = ogn2dump1090()
+    asyncio.run(m.start())

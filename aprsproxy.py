@@ -7,53 +7,36 @@ from typing import Awaitable, Callable, List
 
 defaultAprsServers = ['glidern1.glidernet.org','glidern2.glidernet.org','glidern3.glidernet.org','glidern4.glidernet.org','glidern5.glidernet.org']
 
-class ClientHandler():
-    clientReader : asyncio.StreamReader | None = None
-    clientWriter : asyncio.StreamWriter | None = None
+
+class AprsClient:
+    serverAddrs : List[str]
+    aprsMessage : str | None
+
+    msgCallback : Callable[[bytes], Awaitable[None]]
     upstreamReader : asyncio.StreamReader | None = None
     upstreamWriter : asyncio.StreamWriter | None = None
 
-    forwardAddrs : List[str]
-    msgCallback : Callable[[bytes], Awaitable[None]]
+    def __init__(self, serverAddrs : List[str] = defaultAprsServers, aprsMessage : str | None = None):
+        self.serverAddrs = serverAddrs
+        self.aprsMessage = aprsMessage
 
 
-
-
-    def __init__(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter, forwardAddrs: List[str], msgCallback: Callable[[bytes], Awaitable[None]]):
-        self.clientReader = reader
-        self.clientWriter = writer
-        self.forwardAddrs = forwardAddrs
+    def onMessage(self, msgCallback : Callable[[bytes], Awaitable[None]]):
         self.msgCallback = msgCallback
+        return self
 
 
-    def start(self):
-        asyncio.create_task(self.upstreamConnector())
-        asyncio.create_task(self.heartbeatSender())
-        asyncio.create_task(self.readClient())
-
-    def is_client_connected(self):
-        return self.clientReader is not None and self.clientWriter is not None and not self.clientReader.at_eof() and not self.clientWriter.is_closing()
+    async def start(self):
+        await self.upstreamConnector()
     
-    def is_upstream_connected(self):
-        return self.upstreamReader is not None and self.upstreamWriter is not None and not self.upstreamReader.at_eof() and not self.upstreamWriter.is_closing()
-
-    async def heartbeatSender(self):
-        await asyncio.sleep(20)
-        while self.is_client_connected():
-            if not self.is_upstream_connected():
-                # Standalone - send heartbeat
-                heartbeat = '# ogn2dump1090 1.0 %s OGN2DUMP1090 127.0.0.1:14580\r\n' % datetime.datetime.now(datetime.timezone.utc).isoformat()
-                assert self.clientWriter is not None
-                self.clientWriter.write(heartbeat.encode("utf-8"))
-            await asyncio.sleep(20)
-
     async def upstreamConnector(self):
-        if self.forwardAddrs is None or len(self.forwardAddrs) == 0:
+        if self.serverAddrs is None or len(self.serverAddrs) == 0:
             logging.info("No upstream APRS Server configured. Using standalone mode")
-
-        while self.is_client_connected():
+            return
+        
+        while True:
             try:
-                host = random.choice(self.forwardAddrs)
+                host = random.choice(self.serverAddrs)
                 port = 14580
                 if ':' in host:
                     hp = host.split(':')
@@ -62,46 +45,37 @@ class ClientHandler():
 
                 self.upstreamReader, self.upstreamWriter = await asyncio.open_connection(host, port)
                 logging.info(f"Connected to upstream APRS Server {host}:{port}")
-                while self.is_client_connected() and not self.upstreamReader.at_eof():
-                    line = await self.upstreamReader.readline()
-                    if line is None or not self.is_client_connected():
-                        break
-                    assert self.clientWriter is not None
-                    self.clientWriter.write(line)
+                if self.aprsMessage is not None:
+                    await self.sendMessage((self.aprsMessage + "\n").encode("utf-8"))
 
-                logging.info(f"Upstream APRS Connection closed")
+                while not self.upstreamReader.at_eof():
+                    line = await self.upstreamReader.readline()
+                    if not line:
+                        break
+                    if self.msgCallback:
+                        await self.msgCallback(line)
+                    
+
+                logging.info(f"Upstream APRS Connection closed. Retrying in 10...")
             except Exception as e:
-                logging.warning(f"Upstream APRS connection error: {e}. Retrying in 10..")
+                logging.warning(f"Upstream APRS connection error: {e}. Retrying in 10...")
+            self.upstreamWriter = None
             await asyncio.sleep(10)
 
-    async def readClient(self):
-        while self.is_client_connected():
-            assert self.clientReader is not None
-            line = await self.clientReader.readline()
-            if line is None or not self.is_client_connected():
-                break
-            await self.msgCallback(line)
+    async def sendMessage(self, msg : bytes):
+        if self.upstreamWriter is not None and not self.upstreamWriter.is_closing():
+            self.upstreamWriter.write(msg)
 
-            if self.is_upstream_connected():
-                assert self.upstreamWriter is not None
-                self.upstreamWriter.write(line)
-        
-        # Client no longer connected. Close upstream
-        if self.is_upstream_connected():
-            logging.info("APRS client connection lost. Disconnecting upstream")
-            assert self.upstreamWriter is not None
-            self.upstreamWriter.close()
-    
-
-
-
-class AprsProxy():
-    forwardAddrs : List[str]
+class AprsServer:
     msgCallback : Callable[[bytes], Awaitable[None]]
 
-    def __init__(self, msgcallback : Callable[[bytes], Awaitable[None]], forwardAddrs : List[str]=defaultAprsServers):
-        self.forwardAddrs = forwardAddrs
-        self.msgcallback = msgcallback
+    def __init__(self):
+        pass
+
+    def onMessage(self, msgCallback : Callable[[bytes], Awaitable[None]]):
+        self.msgCallback = msgCallback
+        return self
+
     
     async def start(self):
         await self.start_server()
@@ -113,6 +87,45 @@ class AprsProxy():
     
     async def handle_client(self, reader, writer):
         logging.info("APRS client connected")
-        clientHandler = ClientHandler(reader, writer, self.forwardAddrs, self.msgcallback)
+        clientHandler = ClientHandler(reader, writer, self.msgCallback)
         clientHandler.start()
+
+
         
+class ClientHandler:
+    clientReader : asyncio.StreamReader | None = None
+    clientWriter : asyncio.StreamWriter | None = None
+    msgCallback : Callable[[bytes], Awaitable[None]]
+
+
+    def __init__(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter, msgCallback: Callable[[bytes], Awaitable[None]]):
+        self.clientReader = reader
+        self.clientWriter = writer
+        self.msgCallback = msgCallback
+
+
+    def start(self):
+        asyncio.create_task(self.heartbeatSender())
+        asyncio.create_task(self.readClient())
+
+    def is_client_connected(self):
+        return self.clientReader is not None and self.clientWriter is not None and not self.clientReader.at_eof() and not self.clientWriter.is_closing()
+
+
+    async def heartbeatSender(self):
+        await asyncio.sleep(20)
+        while self.is_client_connected():
+            assert self.clientWriter is not None
+            heartbeat = '# ogn2dump1090 1.0 %s OGN2DUMP1090 127.0.0.1:14580\r\n' % datetime.datetime.now(datetime.timezone.utc).isoformat()
+            self.clientWriter.write(heartbeat.encode("utf-8"))
+            await asyncio.sleep(20)
+
+
+    async def readClient(self):
+        while self.is_client_connected():
+            assert self.clientReader is not None
+            line = await self.clientReader.readline()
+            if line is None or not self.is_client_connected():
+                break
+            if self.msgCallback:
+                await self.msgCallback(line)

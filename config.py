@@ -6,3 +6,9 @@ sbs_destination_port = 30008
 # Host/Port where ogn-decode telnet listens. Leave empty if you only want APRS Proxy functionality
 TELNET_SERVER_HOST = "127.0.0.1"
 TELNET_SERVER_PORT = 50001
+
+
+# Upstream APRS Servers. Leave empty or None to run in standalone mode without upstream APRS connection
+aprs_servers = ['glidern1.glidernet.org','glidern2.glidernet.org','glidern3.glidernet.org','glidern4.glidernet.org','glidern5.glidernet.org']
+# Subscribe to positions with a 20km radius around the given location. None if you don't want to subscribe to anything
+aprs_message = "user anon pass -1 filter g/ALL r/48.0/10.0/20"
