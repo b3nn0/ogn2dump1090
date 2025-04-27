@@ -142,7 +142,6 @@ class ClientHandler:
 
 
     async def heartbeatSender(self):
-        await asyncio.sleep(20)
         while self.is_client_connected():
             assert self.clientWriter is not None
             heartbeat = '# ogn2dump1090 1.0 %s OGN2DUMP1090 127.0.0.1:14580\r\n' % datetime.datetime.now(datetime.timezone.utc).isoformat()
