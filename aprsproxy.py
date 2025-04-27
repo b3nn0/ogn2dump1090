@@ -10,15 +10,23 @@ defaultAprsServers = ['glidern1.glidernet.org','glidern2.glidernet.org','glidern
 
 class AprsClient:
     serverAddrs : List[str]
-    aprsMessage : str | None
+    aprsFilter : str
 
     msgCallback : Callable[[bytes], Awaitable[None]]
     upstreamReader : asyncio.StreamReader | None = None
     upstreamWriter : asyncio.StreamWriter | None = None
 
-    def __init__(self, serverAddrs : List[str] = defaultAprsServers, aprsMessage : str | None = None):
+    reconnectImmediate : bool = False
+
+    aprsUser : str = "anon"
+    aprsPass : str = "-1"
+
+    def __init__(self, serverAddrs : List[str] = defaultAprsServers, aprsFilter : str | None = None):
         self.serverAddrs = serverAddrs
-        self.aprsMessage = aprsMessage
+        if aprsFilter is None or len(aprsFilter) == 0:
+            self.aprsFilter = "g/ALL"
+        else:
+            self.aprsFilter = aprsFilter
 
 
     def onMessage(self, msgCallback : Callable[[bytes], Awaitable[None]]):
@@ -35,6 +43,7 @@ class AprsClient:
             return
         
         while True:
+            err = None
             try:
                 host = random.choice(self.serverAddrs)
                 port = 14580
@@ -45,8 +54,9 @@ class AprsClient:
 
                 self.upstreamReader, self.upstreamWriter = await asyncio.open_connection(host, port)
                 logging.info(f"Connected to upstream APRS Server {host}:{port}")
-                if self.aprsMessage is not None:
-                    await self.sendMessage((self.aprsMessage + "\n").encode("utf-8"))
+                aprsLogin = f"user {self.aprsUser} pass {self.aprsPass} vers ogn2dump1090 0.0.1 filter {self.aprsFilter}\n"
+                logging.info(f"logging in: {aprsLogin.strip()}")
+                self.upstreamWriter.write(aprsLogin.encode("utf-8"))
 
                 while not self.upstreamReader.at_eof():
                     line = await self.upstreamReader.readline()
@@ -55,14 +65,33 @@ class AprsClient:
                     if self.msgCallback:
                         await self.msgCallback(line)
                     
-
-                logging.info(f"Upstream APRS Connection closed. Retrying in 10...")
             except Exception as e:
-                logging.warning(f"Upstream APRS connection error: {e}. Retrying in 10...")
+                err = e
+
             self.upstreamWriter = None
-            await asyncio.sleep(10)
+            if self.reconnectImmediate:
+                self.reconnectImmediate = False
+                logging.info(f"Upstream connection intentionally closed. Reconnecting...")
+            else:
+                logging.warning(f"Upstream APRS Connection closed: {err}. Retrying in 10...")
+                await asyncio.sleep(10)
+
 
     async def sendMessage(self, msg : bytes):
+        # Try to parse login data from ogn-decode if given. Otherwise APRS server will eventually cut us off
+        # if we stay on anon/-1.
+        # Once we have the data, force a reconnect once
+        msgStr = msg.decode("utf-8")
+        if msgStr.startswith("user"):
+            msgSplit = msgStr.split(" ")
+            changed = self.aprsUser != msgSplit[1]
+            self.aprsUser = msgSplit[1]
+            self.aprsPass = msgSplit[3]
+            if changed and self.upstreamWriter is not None:
+                self.reconnectImmediate = True
+                self.upstreamWriter.close()
+                return # Wait for reconnect
+
         if self.upstreamWriter is not None and not self.upstreamWriter.is_closing():
             self.upstreamWriter.write(msg)
 

@@ -11,4 +11,4 @@ TELNET_SERVER_PORT = 50001
 # Upstream APRS Servers. Leave empty or None to run in standalone mode without upstream APRS connection
 aprs_servers = ['glidern1.glidernet.org','glidern2.glidernet.org','glidern3.glidernet.org','glidern4.glidernet.org','glidern5.glidernet.org']
 # Subscribe to positions with a 20km radius around the given location. None if you don't want to subscribe to anything
-aprs_message = "user anon pass -1 filter g/ALL r/48.0/10.0/20"
+aprs_subscribe_filter = "r/48.0/10.0/20"

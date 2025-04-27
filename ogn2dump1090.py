@@ -19,7 +19,7 @@ class ogn2dump1090:
         self.sbswriter = dump1090writer.Dump1090Writer()
         self.ognreader = ognreader.OgnReader(self.onParsedMsg)
         self.aprsserver = aprsproxy.AprsServer().onMessage(self.onAprsFromOgnDecode)
-        self.aprsclient = aprsproxy.AprsClient(config.aprs_servers, config.aprs_message).onMessage(self.onAprsFromUpstream)
+        self.aprsclient = aprsproxy.AprsClient(config.aprs_servers, config.aprs_subscribe_filter).onMessage(self.onAprsFromUpstream)
 
     async def start(self):
         await asyncio.gather(self.sbswriter.start(), self.ognreader.start(), self.aprsserver.start(), self.aprsclient.start())
@@ -30,11 +30,13 @@ class ogn2dump1090:
         
     
     async def onAprsFromOgnDecode(self, msg : bytes):
+        #logging.debug(f"decode > {msg.decode('utf-8').strip()}")
         await self.ognreader.aprsmessage(msg)
         await self.aprsclient.sendMessage(msg)
 
 
     async def onAprsFromUpstream(self, msg : bytes):
+        #logging.debug(f"upstream > {msg.decode('utf-8').strip()}")
         await self.ognreader.aprsmessage(msg)
 
 
