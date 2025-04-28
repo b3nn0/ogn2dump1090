@@ -2,7 +2,7 @@ import datetime
 import random
 import asyncio
 import logging
-from typing import Awaitable, Callable, List
+from typing import Awaitable, Callable, List, Optional
 
 
 defaultAprsServers = ['glidern1.glidernet.org','glidern2.glidernet.org','glidern3.glidernet.org','glidern4.glidernet.org','glidern5.glidernet.org']
@@ -13,15 +13,15 @@ class AprsClient:
     aprsFilter : str
 
     msgCallback : Callable[[bytes], Awaitable[None]]
-    upstreamReader : asyncio.StreamReader | None = None
-    upstreamWriter : asyncio.StreamWriter | None = None
+    upstreamReader : Optional[asyncio.StreamReader] = None
+    upstreamWriter : Optional[asyncio.StreamWriter] = None
 
     reconnectImmediate : bool = False
 
     aprsUser : str = "anon"
     aprsPass : str = "-1"
 
-    def __init__(self, serverAddrs : List[str] = defaultAprsServers, aprsFilter : str | None = None):
+    def __init__(self, serverAddrs : List[str] = defaultAprsServers, aprsFilter : Optional[str] = None):
         self.serverAddrs = serverAddrs
         if aprsFilter is None or len(aprsFilter) == 0:
             self.aprsFilter = "g/ALL"
@@ -122,8 +122,8 @@ class AprsServer:
 
         
 class ClientHandler:
-    clientReader : asyncio.StreamReader | None = None
-    clientWriter : asyncio.StreamWriter | None = None
+    clientReader : Optional[asyncio.StreamReader] = None
+    clientWriter : Optional[asyncio.StreamWriter] = None
     msgCallback : Callable[[bytes], Awaitable[None]]
 
 
