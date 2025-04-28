@@ -3,7 +3,9 @@ simple Python tool to inject Open Glider Network Traffic (from an existing local
 
 ### prerequisites
 - running rtlsdr-ogn instance (e.g. based on https://github.com/VirusPilot/ogn-pi34)
-- running readsb instance (based on https://github.com/wiedehopf/readsb)
+- running readsb instance, e.g. based on:
+  - https://github.com/wiedehopf/readsb
+  - https://github.com/wiedehopf/airspy-conf
 
 ### prepare
 ```
@@ -19,11 +21,12 @@ cd python-ogn-client/
 pip3 install --break-system-packages .
 ```
 
-### enable local OGN APRS proxy (optional)
-you need to add the following line to the OGN APRS configuration section:
+### enable local OGN APRS proxy
+you need to add the following line to the OGN APRS configuration section after your station callsign:
 ```
 APRS:
 {
+  Call   = "NewOGNrx";
   Server = "localhost:14580";
 };
 ```
@@ -33,7 +36,7 @@ sudo service rtlsdr-ogn restart
 ```
 
 ### modify readsb config
-you need to add `--net-sbs-in-port=30008` to the `NET_OPTIONS` of your readsb configuration:
+you need to add `--net-sbs-in-port=30008` to the `NET_OPTIONS` section of your readsb configuration:
 ```
 sudo nano /etc/default/readsb
 ```
@@ -46,7 +49,17 @@ sudo service readsb restart
 ```
 git clone https://github.com/b3nn0/ogn2dump1090
 cd ogn2dump1090/
+```
+modify the GNSS coordinates in the config.py `aprs_subscribe_filter` section according to your GNSS station coordinates:
+```
+nano config.py
+```
+download the latest OGN database:
+```
 wget -O ddb.json http://ddb.glidernet.org/download/?j=1
+```
+prepare and install ogn2dump1090 service:
+```
 OGN2DUMP1090DIR=$(pwd) envsubst < ogn2dump1090.service.template > ogn2dump1090.service
 sudo mv ogn2dump1090.service /etc/systemd/system/
 sudo systemctl enable ogn2dump1090
@@ -62,12 +75,7 @@ https://yourRaspberryPi.local/tar1090/
 ### OGN ddb update
 the OGN database is not automatically updated, therefore a regular manual update is recommended:
 ```
+cd ~/ogn2dump1090/
 wget -O ddb.json http://ddb.glidernet.org/download/?j=1
 sudo systemctl restart ogn2dump1090
 ```
-
-### implementation details
-ogn2dump1090 is parsing one or both of the following two datastreams:
-- APRS (through the enabled local OGN APRS proxy, see above)
-- direct output from ogn-decode port 50001
-and forwarding it to the readsb sbs input port (e.g. 30008)
