@@ -62,8 +62,11 @@ class AprsClient:
                     line = await self.upstreamReader.readline()
                     if not line:
                         break
-                    if self.msgCallback:
-                        await self.msgCallback(line)
+                    try:
+                        if self.msgCallback:
+                            await self.msgCallback(line)
+                    except Exception as e:
+                        logging.warning(f"Failed to process message from upstream: {line}")
                     
             except Exception as e:
                 err = e
