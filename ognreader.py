@@ -149,7 +149,7 @@ class OgnReader():
                 altFt = msg.get('altitude')
                 if altFt is not None: altFt *= 3.28084 # in ft
 
-                speedKt = msg.get('ground_speed')
+                speedKt = msg.get('ground_speed') / 1.852 # km/h in kt
                 climb = msg.get('climb_rate')
                 if climb is not None: climb *= 3.28084
 
