@@ -1,13 +1,14 @@
 # ogn2readsb (aka. ogn2dump1090)
-simple Python tool to inject Open Glider Network Traffic (from an existing local OGN decoder instance) into an existing readsb ADSB decoder instance for display on a unified tar1090 map. OGN traffic will be displayed as **other** traffic in combination with ADSB traffic, using the **readsb tar1090 webinterface** (e.g. https://yourRaspberryPi.local/tar1090/)
+- simple Python tool to inject Open Glider Network Traffic (from an existing local OGN decoder instance) into an existing readsb ADS-B decoder instance for display on a unified **tar1090** map
+- furthermore online aggregated traffic from OGN will also be injected for a reasonably selected radius around a given location
+- OGN traffic will be displayed as **other** traffic alongside with ADS-B traffic, using the **readsb tar1090 webinterface** (e.g. https://yourRaspberryPi.local/tar1090/)
 
-Any combination of these is possible, see `config.py`:
+any combination of the following modes is possible, for more details see `config.py`:
 - Read data from ogn-decode telnet port 50001
 - Pretend to be an APRS Server and have a locally running ogn-decode connect to it
 - Connect to a remote APRS server and subscribe to data from it
 
-If ogn2readsb acts as a local APRS Server AND upstream APRS client in parallel, it will automatically act as a proxy and forward locally received data to upstream.
-
+If ogn2readsb acts as a local APRS Server AND upstream APRS client in parallel, it will automatically act as an APRS proxy and forward locally received data to OGN upstream.
 
 ### prerequisites
 - running rtlsdr-ogn instance (e.g. based on https://github.com/VirusPilot/ogn-pi34)
@@ -53,15 +54,14 @@ followed by a
 sudo service readsb restart
 ```
 
-### install ogn2dump1090 service
+### install ogn2dump1090 service and adjust settings in config.py
 ```
 git clone https://github.com/b3nn0/ogn2dump1090
 cd ogn2dump1090/
-```
-modify the GNSS coordinates in the config.py `aprs_subscribe_filter` section according to your GNSS station coordinates:
-```
 nano config.py
 ```
+modify the GNSS coordinates in the `aprs_subscribe_filter` section according to your GNSS station coordinates, e.g `"r/48.0/10.0/20"` for a 20km radius around your selected location
+
 download the latest OGN database:
 ```
 wget -O ddb.json http://ddb.glidernet.org/download/?j=1
@@ -87,3 +87,5 @@ cd ~/ogn2dump1090/
 wget -O ddb.json http://ddb.glidernet.org/download/?j=1
 sudo systemctl restart ogn2dump1090
 ```
+### remarks
+- if an OGN traffic target also transmitts Mode-S, the displayed RSSI values are related to the Mode-S signal, not to the OGN signal
