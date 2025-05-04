@@ -40,11 +40,13 @@ class Dump1090Writer:
         rcv_time = self.format_time(rcvts)
         now_date = self.format_date(now)
         now_time = self.format_time(now)
-        squawk = ""
+        squawk = msg.get("squawk", "")
+        
         fs = ""
         emerg = ""
         ident = ""
         aog = ""
+        
         # readsb doesn't like - in registration (D-XXX -> DXXX)
         registration = self.csv_quote(self.sanitize(msg.get("registration")))
 

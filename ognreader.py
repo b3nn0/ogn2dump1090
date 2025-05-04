@@ -161,6 +161,13 @@ class OgnReader():
                 if addrStr in self.ogn_devicedb:
                     registration = self.ogn_devicedb[addrStr]
 
+                squawk = ""
+
+                extras = msg.get("comment", "").split(" ")
+                for extra in extras:
+                    if extra.startswith("Sq"):
+                        squawk = extra[2:]
+
                 data = {
                     "address": addr,
                     "lat": lat,
@@ -171,7 +178,8 @@ class OgnReader():
                     "track": track,
                     "registration": registration,
                     "anon": anon,
-                    "addrtype": addrtype
+                    "addrtype": addrtype,
+                    "squawk": squawk
                 }
 
                 #logging.info("APRS " + addrStr)
