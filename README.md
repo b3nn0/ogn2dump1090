@@ -80,12 +80,18 @@ sudo systemctl status ogn2dump1090
 https://yourRaspberryPi.local/tar1090/
 ```
 
-### OGN ddb update
+### OGN database update
 the OGN database is not automatically updated, therefore a regular manual update is recommended:
 ```
 cd ~/ogn2dump1090/
 wget -O ddb.json http://ddb.glidernet.org/download/?j=1
 sudo systemctl restart ogn2dump1090
 ```
+### readsb/tar1090 database update
+the readsb/tar1090 database is not automatically updated, therefore a regular manual update is recommended:
+```
+sudo bash -c "$(wget -O - https://github.com/wiedehopf/adsb-scripts/raw/master/readsb-install.sh)"
+```
+
 ### remarks
 - if an OGN traffic target also transmitts Mode-S, the displayed RSSI values are related to the Mode-S signal, not to the OGN signal
