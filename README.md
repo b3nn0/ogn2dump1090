@@ -45,7 +45,7 @@ sudo service rtlsdr-ogn restart
 ```
 
 ### modify readsb config
-you need to add `--net-sbs-in-port=30008` to the `NET_OPTIONS` section of your readsb configuration:
+you need to add `--net-sbs-jaero-in-port 30008 --jaero-timeout 1` to the `NET_OPTIONS` section of your readsb configuration:
 ```
 sudo nano /etc/default/readsb
 ```
