@@ -1,5 +1,5 @@
 # ogn2readsb (aka. ogn2dump1090)
-- simple Python tool to inject Open Glider Network Traffic (from an existing local OGN decoder instance) into an existing readsb ADS-B decoder instance for display on a unified **tar1090** map
+- simple Python tool to inject Open Glider Network Traffic (from an existing local OGN decoder instance) into an existing **readsb** ADS-B decoder instance for display on a unified **tar1090** map
 - furthermore online aggregated traffic from OGN will also be injected for a reasonably selected radius around a given location
 - OGN traffic will be displayed as **other** traffic alongside with ADS-B traffic, using the **readsb tar1090 webinterface** (e.g. https://yourRaspberryPi.local/tar1090/); you can relabel OGN traffic e.g. to **OGN** by adding `jaeroLabel = "OGN";` to `/usr/local/share/tar1090/html/config.js`
 
@@ -60,7 +60,7 @@ git clone https://github.com/b3nn0/ogn2dump1090
 cd ogn2dump1090/
 nano config.py
 ```
-modify the GNSS coordinates in the `aprs_subscribe_filter` section according to your GNSS station coordinates, e.g `"r/48.0/10.0/20"` for a 20km radius around your selected location
+modify the GNSS coordinates in the `aprs_subscribe_filter` section according to your GNSS station coordinates, e.g `"r/48.0/10.0/20"` for a 20km radius around your selected location and add a the ICAO code of a nearby airport that provides METAR so that baro and GNSS altitude can be converted by ogn2dump1090
 
 download the latest OGN database:
 ```
