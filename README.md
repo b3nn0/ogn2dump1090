@@ -1,7 +1,7 @@
 # ogn2readsb (aka. ogn2dump1090)
 - simple Python tool to inject Open Glider Network Traffic (from an existing local OGN decoder instance) into an existing readsb ADS-B decoder instance for display on a unified **tar1090** map
 - furthermore online aggregated traffic from OGN will also be injected for a reasonably selected radius around a given location
-- OGN traffic will be displayed as **other** traffic alongside with ADS-B traffic, using the **readsb tar1090 webinterface** (e.g. https://yourRaspberryPi.local/tar1090/)
+- OGN traffic will be displayed as **other** traffic alongside with ADS-B traffic, using the **readsb tar1090 webinterface** (e.g. https://yourRaspberryPi.local/tar1090/); you can relabel OGN traffic e.g. to **OGN** by adding `jaeroLabel = "OGN";` to `/usr/local/share/tar1090/html/config.js`
 
 any combination of the following modes is possible, for more details see `config.py`:
 - Read data from ogn-decode telnet port 50001
