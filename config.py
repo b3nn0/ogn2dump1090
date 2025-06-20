@@ -16,7 +16,13 @@ aprs_servers = ['glidern1.glidernet.org','glidern2.glidernet.org','glidern3.glid
 
 
 # Subscribe to positions with a 20km radius around the given location. None if you don't want to subscribe to anything
-aprs_subscribe_filter = "r/48.0/10.0/20"
+aprs_subscribe_filter = "r/48.0/10.0/100"
+
+# Optional:
+# ADS-B Data is usually based on pressure altitude, but OGN is based on GPS altitude.
+# ogn2dump1090 can convert it for you, by fetching METARS from a nearby airport via https://aviationweather.gov/data/api/
+# Must be the 4 letter ICAO code of a nearby airport, e.g. "EDNY". Test the request via https://aviationweather.gov/api/data/metar?ids=EDNY
+metar_source = None
 
 
 # APRS Server is always active. If you want to use it, and have ogn2readsb act as an APRS proxy, change your rtlsdr-ogn configuration to include

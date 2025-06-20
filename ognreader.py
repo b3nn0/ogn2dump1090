@@ -10,6 +10,7 @@ import logging
 import time
 import ogn.parser
 import asyncio
+from aviationweather import AviationWeather
 
 
 # Shamelessly taken from https://github.com/glidernet/python-ogn-client/blob/master/ogn/parser/pattern.py
@@ -29,17 +30,19 @@ PATTERN_TELNET_50001 = re.compile(r"""
 class OgnReader():
     callback : Callable[[dict], Awaitable[None]]
     ogn_devicedb : dict[str, str]
+    weather : AviationWeather
 
     def __init__(self, callback):
         self.callback = callback
         self.ogn_devicedb = {}
         self.read_ognddb()
+        self.weather = AviationWeather()
 
     async def start(self):
         if config.TELNET_SERVER_HOST is None or config.TELNET_SERVER_HOST == "":
             logging.info("Ogn telnet reader disabled")
             return
-
+        asyncio.create_task(self.weather.run())
         await self.ognreader()
     
     async def ognreader(self):
@@ -85,6 +88,7 @@ class OgnReader():
                 lat = float(msg['latitude'])
                 lon = float(msg['longitude'])
                 altFt = float(msg['altitude']) * 3.28084 # in ft
+                altFt -= self.weather.gnssBaroDiffFt
                 speedKt = float(msg['ground_speed']) * 1.94384 # m/s in kt
                 climb = int(float(msg['climb_rate']) * 196.85)
                 track = float(msg['track'])
@@ -147,9 +151,11 @@ class OgnReader():
                 lon = msg['longitude']
                 track = msg.get('track', None)
                 altFt = msg.get('altitude')
-                if altFt is not None: altFt *= 3.28084 # in ft
+                if altFt is not None:
+                    altFt *= 3.28084 # in ft
+                    altFt -= self.weather.gnssBaroDiffFt
 
-                speedKt = msg.get('ground_speed') / 1.852 # km/h in kt
+                speedKt = msg.get('ground_speed', 0) / 1.852 # km/h in kt
                 climb = msg.get('climb_rate')
                 if climb is not None: climb *= 3.28084
 
