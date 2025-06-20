@@ -19,7 +19,7 @@ If ogn2readsb acts as a local APRS Server AND upstream APRS client in parallel, 
 ### prepare
 ```
 sudo apt update
-sudo apt install python3-pip git telnet -y
+sudo apt install python3-pip python3-aiohttp git telnet -y
 ```
 
 ### install python-ogn-client
