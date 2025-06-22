@@ -11,10 +11,10 @@ any combination of the following modes is possible, for more details see `config
 If ogn2readsb acts as a local APRS Server AND upstream APRS client in parallel, it will automatically act as an APRS proxy and forward locally received data to OGN upstream.
 
 ### prerequisites
-- running rtlsdr-ogn instance (e.g. based on https://github.com/VirusPilot/ogn-pi34)
-- running readsb instance, e.g. based on:
+- running **rtlsdr-ogn** instance (e.g. based on https://github.com/VirusPilot/ogn-pi34)
+- running **readsb** instance, e.g. based on:
   - https://github.com/wiedehopf/readsb
-  - https://github.com/wiedehopf/airspy-conf
+  - https://github.com/wiedehopf/airspy-conf (in case you are using an AirSpy SDR)
 
 ### prepare
 ```
@@ -39,7 +39,7 @@ APRS:
   Server = "localhost:14580";
 };
 ```
-followed by a
+followed by a:
 ```
 sudo service rtlsdr-ogn restart
 ```
@@ -49,7 +49,7 @@ you need to add `--net-sbs-jaero-in-port 30008 --jaero-timeout 1` to the `NET_OP
 ```
 sudo nano /etc/default/readsb
 ```
-followed by a
+followed by a:
 ```
 sudo service readsb restart
 ```
