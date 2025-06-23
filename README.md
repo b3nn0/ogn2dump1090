@@ -95,3 +95,4 @@ sudo bash -c "$(wget -O - https://github.com/wiedehopf/adsb-scripts/raw/master/r
 
 ### remarks
 - if an OGN traffic target also transmitts Mode-S, the displayed RSSI values are related to the Mode-S signal, not to the OGN signal
+- for a fresh install you may consider trying the following script: [script that installs rtlsrd-ogn, readsb and ogn2dump1090](https://github.com/VirusPilot/ogn-pi34?tab=readme-ov-file#automatic-setup-2-alternative-script-that-installs-rtlsrd-ogn-readsb-and-ogn2dump1090)
