@@ -124,6 +124,9 @@ class OgnReader():
             try:
                 if ":" not in strmsg:
                     continue # ???
+                if " id" not in strmsg:
+                    continue # random messages from gound stations will be wrongly parsed by python-ogn parser library - skip
+                
                 # python ogn lib doesn't like that there is no receiver string in our local messages.. fake one in
                 while strmsg.split(':')[0].count(',') <= 1:
                     strmsg = strmsg.replace(':', ',XXX:', 1)
