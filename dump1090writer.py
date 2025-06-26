@@ -6,7 +6,7 @@ import logging
 import asyncio
 
 class Dump1090Writer:
-    sbsWriter : Optional[asyncio.StreamWriter]
+    sbsWriter : Optional[asyncio.StreamWriter] = None
 
     def __init__(self):
         pass
