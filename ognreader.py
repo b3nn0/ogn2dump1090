@@ -141,11 +141,6 @@ class OgnReader():
                 addrtypeStr = msg.get('address_type', '0')
                 addrtype = 0 if addrtypeStr is None else int(addrtypeStr)
 
-                if addrStr is None and "name" in msg:
-                    name = msg["name"]
-                    addrStr = name[3:]
-                    if name.startswith("ICA"):
-                        addrtype = 1
                 if addrStr is None or addrStr == "":
                     continue
 
