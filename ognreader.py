@@ -75,9 +75,14 @@ class OgnReader():
             logging.warn('Failed to read device db')
     
 
-    async def parse_line(self, line):
+    async def parse_line(self, line : bytes):
         try:
-            search = re.search(PATTERN_TELNET_50001, str(line))
+            linestr = line.decode('utf-8')
+            if linestr.startswith("APRS <- "):
+                await self.aprsmessage(line[9:])
+                return
+            
+            search = re.search(PATTERN_TELNET_50001, linestr)
             if search is not None:
                 msg = search.groupdict()
                 addrStr = msg['address']
@@ -116,8 +121,8 @@ class OgnReader():
         except Exception as e:
             pass
 
-    async def aprsmessage(self, msg):
-        strmsgs = msg.decode('utf-8')
+    async def aprsmessage(self, msgbytes : bytes):
+        strmsgs = msgbytes.decode('utf-8')
         if len(strmsgs) == 0:
             return
         for strmsg in strmsgs.splitlines():
@@ -148,10 +153,17 @@ class OgnReader():
                 lat = msg['latitude']
                 lon = msg['longitude']
                 track = msg.get('track', None)
-                altFt = msg.get('altitude')
-                if altFt is not None:
-                    altFt *= 3.28084 # in ft
-                    altFt -= self.weather.gnssBaroDiffFt
+
+                flightlevel = msg.get('flightlevel')
+                if flightlevel is not None:
+                    altFt = float(flightlevel) * 100
+                else:
+                    altFt = msg.get('altitude')
+                    if altFt is not None:
+                        altFt *= 3.28084 # in ft
+                        altFt -= self.weather.gnssBaroDiffFt
+                    
+
 
                 speedKt = msg.get('ground_speed', 0) / 1.852 # km/h in kt
                 climb = msg.get('climb_rate')
