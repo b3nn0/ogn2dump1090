@@ -39,10 +39,10 @@ class OgnReader():
         self.weather = AviationWeather()
 
     async def start(self):
+        asyncio.create_task(self.weather.run())
         if config.TELNET_SERVER_HOST is None or config.TELNET_SERVER_HOST == "":
             logging.info("Ogn telnet reader disabled")
             return
-        asyncio.create_task(self.weather.run())
         await self.ognreader()
     
     async def ognreader(self):
