@@ -9,10 +9,10 @@ TELNET_SERVER_PORT = 50001
 
 
 # Upstream APRS Servers. Leave empty or None to run in standalone mode without upstream APRS connection
-aprs_servers = ['glidern1.glidernet.org','glidern2.glidernet.org','glidern3.glidernet.org','glidern4.glidernet.org','glidern5.glidernet.org']
+# aprs_servers = ['glidern1.glidernet.org','glidern2.glidernet.org','glidern3.glidernet.org','glidern4.glidernet.org','glidern5.glidernet.org']
 
 # Use generic APRS Server address instead of the list above
-# aprs_servers = ['aprs.glidernet.org']
+aprs_servers = ['aprs.glidernet.org']
 
 
 # Subscribe to positions with a 20km radius around the given location. None if you don't want to subscribe to anything
