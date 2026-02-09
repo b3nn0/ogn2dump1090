@@ -122,7 +122,13 @@ class OgnReader():
             pass
 
     async def aprsmessage(self, msgbytes : bytes):
-        strmsgs = msgbytes.decode('utf-8')
+        strmsgs = []
+        try:
+            strmsgs = msgbytes.decode('utf-8')
+        except Exception as e:
+            logging.warning(f"Received invalid utf-8 in APRS message {msgbytes}: Ignoring {e}")
+            return
+
         if len(strmsgs) == 0:
             return
         for strmsg in strmsgs.splitlines():
