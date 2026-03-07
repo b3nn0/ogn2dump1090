@@ -84,7 +84,11 @@ class AprsClient:
         # Try to parse login data from ogn-decode if given. Otherwise APRS server will eventually cut us off
         # if we stay on anon/-1.
         # Once we have the data, force a reconnect once
-        msgStr = msg.decode("utf-8")
+        try:
+            msgStr = msg.decode("utf-8")
+        except Exception as e:
+            logging.warning(f"Received invalid utf-8 in APRS message {msg}: Ignoring {e}")
+            return
         if msgStr.startswith("user"):
             msgSplit = msgStr.split(" ")
             changed = self.aprsUser != msgSplit[1]
