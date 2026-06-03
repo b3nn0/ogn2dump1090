@@ -5,7 +5,8 @@ import logging
 from typing import Awaitable, Callable, List, Optional
 
 
-defaultAprsServers = ['glidern1.glidernet.org','glidern2.glidernet.org','glidern3.glidernet.org','glidern4.glidernet.org','glidern5.glidernet.org']
+#defaultAprsServers = ['glidern1.glidernet.org','glidern2.glidernet.org','glidern3.glidernet.org','glidern4.glidernet.org','glidern5.glidernet.org']
+defaultAprsServers = ['aprs.glidernet.org']
 
 
 class AprsClient:
