@@ -14,6 +14,9 @@ TELNET_SERVER_PORT = 50001
 # Use generic APRS Server address instead of the list above
 aprs_servers = ['aprs.glidernet.org']
 
+# DroneAware UDP port. Supports forwarding DroneAware data to readsb, too.
+# Disabled by defauled. Set to 9999 to enable (listends for UDP broadcasts of DroneAware)
+DRONEAWARE_UDP_PORT = 9999
 
 # Subscribe to positions with a 20km radius around the given location. None if you don't want to subscribe to anything
 aprs_subscribe_filter = "r/48.0/10.0/100"

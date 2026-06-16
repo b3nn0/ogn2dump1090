@@ -55,8 +55,8 @@ class Dump1090Writer:
         trackStr = int(msg.get("track")) if msg.get("track") is not None else ''
         altclimbRateFtMinStr = int(msg.get("climbRateFtMin")) if msg.get("climbRateFtMin") is not None else ''
         address = msg.get("address")
-        lat = msg.get("lat")
-        lon = msg.get("lon")
+        lat = msg.get("lat") if msg.get("lat") is not None else ''
+        lon = msg.get("lon") if msg.get("lon") is not None else ''
 
         formatted = f"MSG,3,1,1,{addrTypeStr}{address:06X},1,{rcv_date},{rcv_time},{now_date},{now_time},{registration},{altFtStr},{speedKtStr},{trackStr},{lat},{lon},{altclimbRateFtMinStr},{squawk},{fs},{emerg},{ident},{aog}\n"
         self.sbsWriter.write(formatted.encode("utf-8"))
@@ -78,6 +78,8 @@ class Dump1090Writer:
             return '"' + s.replace('"', '""') + '"'
     
     def sanitize(self, s):
+        if s is None:
+            return ''
         return ''.join(c for c in s if c.isalnum())
 
 async def main():
