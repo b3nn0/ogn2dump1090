@@ -4,6 +4,7 @@
 import aprsproxy
 import ognreader
 import dump1090writer
+import droneaware_reader
 import os
 import argparse
 import logging
@@ -18,11 +19,23 @@ class ogn2dump1090:
     def __init__(self):
         self.sbswriter = dump1090writer.Dump1090Writer()
         self.ognreader = ognreader.OgnReader(self.onParsedMsg)
+        self.droneawarereader = None
+        if config.DRONEAWARE_UDP_PORT is not None:
+            self.droneawarereader = droneaware_reader.DroneAwareReader(self.onParsedMsg)
         self.aprsserver = aprsproxy.AprsServer().onMessage(self.onAprsFromOgnDecode)
         self.aprsclient = aprsproxy.AprsClient(config.aprs_servers, config.aprs_subscribe_filter).onMessage(self.onAprsFromUpstream)
 
     async def start(self):
-        await asyncio.gather(self.sbswriter.start(), self.ognreader.start(), self.aprsserver.start(), self.aprsclient.start())
+        tasks = [
+            self.sbswriter.start(),
+            self.ognreader.start(),
+            self.aprsserver.start(),
+            self.aprsclient.start()
+        ]
+        if self.droneawarereader is not None:
+            tasks.append(self.droneawarereader.start())
+        
+        await asyncio.gather(*tasks)
 
     
     async def onParsedMsg(self, msgDict : dict):
