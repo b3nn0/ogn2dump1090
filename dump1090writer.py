@@ -34,7 +34,11 @@ class Dump1090Writer:
         now = time.time()
         rcvts = now # todo
 
-        addrTypeStr = '~' if msg.get("anon") or msg.get("addrtype") != 1 else ''
+        if config.respect_ogn_address_type and (msg.get("anon") or msg.get("addrtype") != 1):
+            addrTypeStr = '~'
+        else:
+            addrTypeStr = ''
+        
 
         rcv_date = self.format_date(rcvts)
         rcv_time = self.format_time(rcvts)

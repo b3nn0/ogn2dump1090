@@ -27,6 +27,13 @@ aprs_subscribe_filter = "r/48.0/10.0/100"
 # Must be the 4 letter ICAO code of a nearby airport, e.g. "EDNY". Test the request via https://aviationweather.gov/api/data/metar?ids=EDNY
 metar_source = None
 
+# If set to Frue, aircraft addresses indicated as non-icao will receive a "~" prefix for readsb to not merge them with
+# a potential ICAO address aircraft.
+# If set to false, all OGN addresses are passed as if they were ICAO adresses.
+# This mainly helps with SafeSky targets when an aprs_subscribe_filter is set. These
+# ALWAYS report as OGN adresses, despite actually being valid ICAO adresses.
+respect_ogn_address_type = True
+
 
 # APRS Server is always active. If you want to use it, and have ogn2readsb act as an APRS proxy, change your rtlsdr-ogn configuration to include
 # something like
