@@ -15,8 +15,8 @@ TELNET_SERVER_PORT = 50001
 aprs_servers = ['aprs.glidernet.org']
 
 # DroneAware UDP port. Supports forwarding DroneAware data to readsb, too.
-# Disabled by defauled. Set to 9999 to enable (listends for UDP broadcasts of DroneAware)
-DRONEAWARE_UDP_PORT = 9999
+# Disabled by default. Set to 9999 to enable (listens for UDP broadcasts of DroneAware)
+DRONEAWARE_UDP_PORT = None # 9999
 
 # Subscribe to positions with a 20km radius around the given location. None if you don't want to subscribe to anything
 aprs_subscribe_filter = "r/48.0/10.0/100"
@@ -27,7 +27,7 @@ aprs_subscribe_filter = "r/48.0/10.0/100"
 # Must be the 4 letter ICAO code of a nearby airport, e.g. "EDNY". Test the request via https://aviationweather.gov/api/data/metar?ids=EDNY
 metar_source = None
 
-# If set to Frue, aircraft addresses indicated as non-icao will receive a "~" prefix for readsb to not merge them with
+# If set to True, aircraft addresses indicated as non-icao will receive a "~" prefix for readsb to not merge them with
 # a potential ICAO address aircraft.
 # If set to false, all OGN addresses are passed as if they were ICAO adresses.
 # This mainly helps with SafeSky targets when an aprs_subscribe_filter is set. These
